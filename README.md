@@ -103,6 +103,7 @@ OK
 circuit.circom  circuit.r1cs  circuit.wasm  input.json  params.bin  proof.json  public.json  Verifier.sol  proving_key.json  verifying_key.json  witness.json
 ```
 
+TODO:
 Also see `test_poseidon_groth16.sh` and `test_poseidon_plonk.sh` for example
 
 # Installation
@@ -116,14 +117,14 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 Install zkutil globally
 
 ```shell script
-cargo install zkutil
+cargo install --git https://github.com/Fluidex/zkutil
 # Make sure `~/.cargo/bin` is in $PATH (should be added automatically during Rust installation)
 ```
 
 Or alternatively you can compile and run it instead:
 
 ```shell script
-git clone https://github.com/poma/zkutil
+git clone https://github.com/Fluidex/zkutil
 cd zkutil
 cargo run --release -- prove --help
 ```
