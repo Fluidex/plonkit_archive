@@ -195,14 +195,20 @@ fn prove(opts: ProveOpts) {
 }
 
 fn verify(opts: VerifyOpts) {
-    if opts.proof_system == ProofSystem::Plonk {
-        unimplemented!();
+    let correct: bool;
+    match opts.proof_system {
+        ProofSystem::Plonk => {
+            unimplemented!();
+            unimplemented!()
+        }
+        ProofSystem::Groth16 => {
+            let params = load_params_file(&opts.params);
+            let proof = load_proof_json_file::<Bn256>(&opts.proof);
+            let inputs = load_inputs_json_file::<Bn256>(&opts.public);
+            correct = verify2(&params, &proof, &inputs).unwrap();
+        }
     }
 
-    let params = load_params_file(&opts.params);
-    let proof = load_proof_json_file::<Bn256>(&opts.proof);
-    let inputs = load_inputs_json_file::<Bn256>(&opts.public);
-    let correct = verify2(&params, &proof, &inputs).unwrap();
     if correct {
         println!("Proof is correct");
     } else {
