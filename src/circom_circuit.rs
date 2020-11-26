@@ -26,7 +26,6 @@ use bellman_ce::{
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
 
-use crate::proofsys_type::ProofSystem;
 use crate::utils::{p1_to_vec, p2_to_vec, pairing_to_vec, proof_to_hex, repr_to_big};
 
 #[derive(Serialize, Deserialize)]
