@@ -70,7 +70,7 @@ struct ProveOpts {
     #[clap(short = "o", long = "public", default_value = "public.json")]
     public: String,
     /// Proof system
-    #[clap(long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
 }
 
@@ -87,7 +87,7 @@ struct VerifyOpts {
     #[clap(short = "i", long = "public", default_value = "public.json")]
     public: String,
     /// Proof system
-    #[clap(long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
 }
 
@@ -101,7 +101,7 @@ struct SetupOpts {
     #[clap(short = "c", long = "circuit")]
     circuit: Option<String>,
     /// Proof system
-    #[clap(long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
 }
 
@@ -115,7 +115,7 @@ struct GenerateVerifierOpts {
     #[clap(short = "v", long = "verifier", default_value = "Verifier.sol")]
     verifier: String,
     /// Proof system
-    #[clap(long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
 }
 
@@ -135,7 +135,7 @@ struct ExportKeysOpts {
     #[clap(short = "v", long = "vk", default_value = "verification_key.json")]
     vk: String,
     /// Proof system
-    #[clap(long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
 }
 
