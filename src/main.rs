@@ -22,20 +22,10 @@ struct Opts {
     command: SubCommand,
 }
 
-#[derive(Clap)]
+#[derive(Clap, Debug)]
 enum ProofSystem {
     Groth16,
     Plonk,
-}
-
-impl fmt::Display for ProofSystem {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let printable = match *self {
-            ProofSystem::Groth16 => "groth16",
-            ProofSystem::Plonk => "plonk",
-        };
-        write!(f, "{}", printable)
-    }
 }
 
 impl str::FromStr for ProofSystem {
@@ -156,19 +146,23 @@ fn main() {
     let opts: Opts = Opts::parse();
     match opts.command {
         SubCommand::Prove(o) => {
+            println!("Running with proof system: {:?}", o.proof_system);
             prove(o);
         }
         SubCommand::Verify(o) => {
-            // println!("{}", o.proof_system);
+            println!("Running with proof system: {:?}", o.proof_system);
             verify(o);
         }
         SubCommand::Setup(o) => {
+            println!("Running with proof system: {:?}", o.proof_system);
             setup(o);
         }
         SubCommand::GenerateVerifier(o) => {
+            println!("Running with proof system: {:?}", o.proof_system);
             generate_verifier(o);
         }
         SubCommand::ExportKeys(o) => {
+            println!("Running with proof system: {:?}", o.proof_system);
             export_keys(o);
         }
     }
