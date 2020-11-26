@@ -227,6 +227,11 @@ pub fn groth16_verify<E: Engine>(params: &Parameters<E>, proof: &Proof<E>, input
     groth16::verify_proof(&groth16::prepare_verifying_key(&params.vk), proof, &inputs)
 }
 
+pub fn plonk_verify() -> Result<bool, SynthesisError> {
+    // bellman_ce::plonk::verify();
+    unimplemented!();
+}
+
 pub fn create_verifier_sol(params: &Parameters<Bn256>) -> String {
     // TODO: use a simple template engine
     let bytes = include_bytes!("verifier_groth.sol");

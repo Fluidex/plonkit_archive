@@ -10,8 +10,8 @@ use std::path::Path;
 use std::str;
 use zkutil::circom_circuit::{
     create_rng, create_verifier_sol_file, generate_random_parameters, groth16_verify, load_inputs_json_file, load_params_file,
-    load_proof_json_file, proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file, r1cs_from_json_file,
-    verification_key_json_file, witness_from_json_file, CircomCircuit, R1CS,
+    load_proof_json_file, plonk_verify, proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file,
+    r1cs_from_json_file, verification_key_json_file, witness_from_json_file, CircomCircuit, R1CS,
 };
 use zkutil::proofsys_type::ProofSystem;
 
@@ -198,8 +198,7 @@ fn verify(opts: VerifyOpts) {
     let correct: bool;
     match opts.proof_system {
         ProofSystem::Plonk => {
-            unimplemented!();
-            // correct = bellman_ce::plonk::verify().unwrap();
+            correct = plonk_verify().unwrap();
         }
         ProofSystem::Groth16 => {
             let params = load_params_file(&opts.params);
