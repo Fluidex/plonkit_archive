@@ -9,9 +9,23 @@ use std::fs::File;
 use std::path::Path;
 use std::str;
 use zkutil::circom_circuit::{
-    create_rng, create_verifier_sol_file, generate_random_parameters, groth16_verify, load_inputs_json_file, load_params_file,
-    load_proof_json_file, plonk_verify, proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file,
-    r1cs_from_json_file, verification_key_json_file, witness_from_json_file, CircomCircuit, R1CS,
+    create_rng,
+    create_verifier_sol_file,
+    generate_random_parameters,
+    groth16_verify,
+    load_inputs_json_file,
+    load_params_file,
+    load_proof_json_file,
+    proof_to_json_file,
+    prove as prove2,
+    proving_key_json_file,
+    r1cs_from_bin_file,
+    r1cs_from_json_file,
+    verification_key_json_file,
+    witness_from_json_file,
+    CircomCircuit,
+    R1CS,
+    // plonk_verify,
 };
 use zkutil::proofsys_type::ProofSystem;
 
@@ -199,7 +213,7 @@ fn verify(opts: VerifyOpts) {
     match opts.proof_system {
         ProofSystem::Plonk => {
             unimplemented!();
-            correct = plonk_verify().unwrap();
+            // correct = plonk_verify().unwrap();
         }
         ProofSystem::Groth16 => {
             // TODO: refactor loader for different proof_system
