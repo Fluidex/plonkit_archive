@@ -11,5 +11,6 @@ extern crate rand;
 
 pub mod circom_circuit;
 pub mod plonk_util;
+pub mod proof_system;
 pub mod r1cs_reader;
 pub mod utils;
