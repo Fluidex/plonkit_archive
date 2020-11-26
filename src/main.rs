@@ -198,6 +198,7 @@ fn verify(opts: VerifyOpts) {
     let correct: bool;
     match opts.proof_system {
         ProofSystem::Plonk => {
+            unimplemented!();
             correct = plonk_verify().unwrap();
         }
         ProofSystem::Groth16 => {

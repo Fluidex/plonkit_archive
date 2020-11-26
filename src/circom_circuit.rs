@@ -228,8 +228,8 @@ pub fn groth16_verify<E: Engine>(params: &Parameters<E>, proof: &Proof<E>, input
 }
 
 pub fn plonk_verify() -> Result<bool, SynthesisError> {
-    // bellman_ce::plonk::verify();
     unimplemented!();
+    // bellman_ce::plonk::verify();
 }
 
 pub fn create_verifier_sol(params: &Parameters<Bn256>) -> String {
