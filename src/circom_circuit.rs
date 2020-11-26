@@ -11,12 +11,11 @@ use std::iter::repeat;
 use std::str;
 use std::sync::Arc;
 
-use bellman_ce::groth16;
-use bellman_ce::plonk;
 use bellman_ce::plonk::{
     better_cs::cs::PlonkCsWidth4WithNextStepParams, better_cs::keys::Proof as PlonkProof,
     commitments::transcript::keccak_transcript::RollingKeccakTranscript, VerificationKey as PlonkVerificationKey,
 };
+use bellman_ce::groth16;
 use bellman_ce::{
     groth16::{create_random_proof, generate_random_parameters as generate_random_parameters2, prepare_prover, Parameters, Proof},
     pairing::{
@@ -233,10 +232,10 @@ pub fn groth16_verify<E: Engine>(params: &Parameters<E>, proof: &Proof<E>, input
 }
 
 pub fn plonk_verify<E: Engine>(
-    vk: &PlonkVerificationKey<E, plonk::PlonkCsWidth4WithNextStepParams>,
-    proof: &PlonkProof<E, plonk::PlonkCsWidth4WithNextStepParams>,
+    vk: &PlonkVerificationKey<E, PlonkCsWidth4WithNextStepParams>,
+    proof: &PlonkProof<E, PlonkCsWidth4WithNextStepParams>,
 ) -> Result<bool, SynthesisError> {
-    bellman_ce::plonk::verify::<_, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(&proof, &vk.0)
+    bellman_ce::plonk::verify::<_, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(&proof, &vk)
 }
 
 pub fn create_verifier_sol(params: &Parameters<Bn256>) -> String {
