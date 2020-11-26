@@ -26,6 +26,7 @@ use bellman_ce::{
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
 
+use crate::proofsys_type::ProofSystem;
 use crate::utils::{p1_to_vec, p2_to_vec, pairing_to_vec, proof_to_hex, repr_to_big};
 
 #[derive(Serialize, Deserialize)]
@@ -115,7 +116,7 @@ pub struct CircomCircuit<E: Engine> {
     pub r1cs: R1CS<E>,
     pub witness: Option<Vec<E::Fr>>,
     pub wire_mapping: Option<Vec<usize>>,
-    pub is_plonk: bool,
+    pub aux_offset: usize,
     // debug symbols
 }
 
@@ -162,16 +163,15 @@ impl<'a, E: Engine> Circuit<E> for CircomCircuit<E> {
                 },
             )?;
         }
-        let aux_offset = if self.is_plonk { 1 } else { 0 };
-        for i in aux_offset..(self.r1cs.num_aux + aux_offset) {
+        for i in self.aux_offset..(self.aux_offset + self.r1cs.num_aux) {
             cs.alloc(
                 || format!("aux {}", i),
                 || {
                     Ok(match witness {
                         None => E::Fr::from_str("1").unwrap(),
                         Some(w) => match wire_mapping {
-                            None => w[i + self.r1cs.num_inputs - aux_offset],
-                            Some(m) => w[m[i + self.r1cs.num_inputs - aux_offset]],
+                            None => w[i + self.r1cs.num_inputs - self.aux_offset],
+                            Some(m) => w[m[i + self.r1cs.num_inputs - self.aux_offset]],
                         },
                     })
                 },
@@ -182,7 +182,7 @@ impl<'a, E: Engine> Circuit<E> for CircomCircuit<E> {
             if index < self.r1cs.num_inputs {
                 Index::Input(index)
             } else {
-                Index::Aux(index - self.r1cs.num_inputs + aux_offset) // plonk uses 1st var internally
+                Index::Aux(index - self.r1cs.num_inputs + self.aux_offset) // plonk uses 1st var internally
             }
         };
         let make_lc = |lc_data: Vec<(usize, E::Fr)>| {
