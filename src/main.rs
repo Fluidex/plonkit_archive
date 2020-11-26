@@ -4,12 +4,11 @@ extern crate zkutil;
 
 use bellman_ce::pairing::bn256::Bn256;
 use clap::Clap;
-use std::fmt::{Display, Formatter, Result as fmtResult};
+use std::fmt;
 use std::fs;
 use std::fs::File;
 use std::path::Path;
-use std::str::FromStr;
-use std::string::ParseError as strParseError;
+use std::str;
 use zkutil::circom_circuit::{
     create_rng, create_verifier_sol_file, generate_random_parameters, load_inputs_json_file, load_params_file, load_proof_json_file,
     proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file, r1cs_from_json_file, verification_key_json_file,
@@ -29,8 +28,8 @@ enum ProofSystem {
     Plonk,
 }
 
-impl Display for ProofSystem {
-    fn fmt(&self, f: &mut Formatter) -> fmtResult {
+impl fmt::Display for ProofSystem {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let printable = match *self {
             ProofSystem::Groth16 => "groth16",
             ProofSystem::Plonk => "plonk",
@@ -39,7 +38,7 @@ impl Display for ProofSystem {
     }
 }
 
-impl FromStr for ProofSystem {
+impl str::FromStr for ProofSystem {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
