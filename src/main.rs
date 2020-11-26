@@ -40,14 +40,13 @@ impl Display for ProofSystem {
 }
 
 impl FromStr for ProofSystem {
-    type Err = strParseError;
+    type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "groth16" => Ok(Self::Groth16),
-            "plonk" => Ok(Self::Plonk),
-            // TODO:
-            _ => Ok(Self::Plonk),
+            "groth16" | "Groth16" => Ok(Self::Groth16),
+            "plonk" | "Plonk" | "PLONK" | "PlonK" => Ok(Self::Plonk),
+            _ => Err("Invalid proof system"),
         }
     }
 }
@@ -156,7 +155,6 @@ struct ExportKeysOpts {
 
 fn main() {
     let opts: Opts = Opts::parse();
-
 
     match opts.command {
         SubCommand::Prove(o) => {
