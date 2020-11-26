@@ -11,11 +11,11 @@ use std::iter::repeat;
 use std::str;
 use std::sync::Arc;
 
+use bellman_ce::groth16;
 use bellman_ce::plonk::{
     better_cs::cs::PlonkCsWidth4WithNextStepParams, better_cs::keys::Proof as PlonkProof,
     commitments::transcript::keccak_transcript::RollingKeccakTranscript, VerificationKey as PlonkVerificationKey,
 };
-use bellman_ce::groth16;
 use bellman_ce::{
     groth16::{create_random_proof, generate_random_parameters as generate_random_parameters2, prepare_prover, Parameters, Proof},
     pairing::{
