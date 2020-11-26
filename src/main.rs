@@ -22,7 +22,7 @@ struct Opts {
     command: SubCommand,
 }
 
-#[derive(Clap, Debug)]
+#[derive(Clap, Debug, PartialEq)]
 enum ProofSystem {
     Groth16,
     Plonk,
@@ -191,6 +191,10 @@ fn resolve_circuit_file(filename: Option<String>) -> String {
 }
 
 fn prove(opts: ProveOpts) {
+    if opts.proof_system == ProofSystem::Plonk {
+        unimplemented!();
+    }
+
     let rng = create_rng();
     let params = load_params_file(&opts.params);
     let circuit_file = resolve_circuit_file(opts.circuit);
@@ -209,6 +213,10 @@ fn prove(opts: ProveOpts) {
 }
 
 fn verify(opts: VerifyOpts) {
+    if opts.proof_system == ProofSystem::Plonk {
+        unimplemented!();
+    }
+
     let params = load_params_file(&opts.params);
     let proof = load_proof_json_file::<Bn256>(&opts.proof);
     let inputs = load_inputs_json_file::<Bn256>(&opts.public);
@@ -222,6 +230,10 @@ fn verify(opts: VerifyOpts) {
 }
 
 fn setup(opts: SetupOpts) {
+    if opts.proof_system == ProofSystem::Plonk {
+        unimplemented!();
+    }
+
     let circuit_file = resolve_circuit_file(opts.circuit);
     println!("Loading circuit from {}...", circuit_file);
     let rng = create_rng();
@@ -240,12 +252,20 @@ fn setup(opts: SetupOpts) {
 }
 
 fn generate_verifier(opts: GenerateVerifierOpts) {
+    if opts.proof_system == ProofSystem::Plonk {
+        unimplemented!();
+    }
+    
     let params = load_params_file(&opts.params);
     create_verifier_sol_file(&params, &opts.verifier).unwrap();
     println!("Created {}", opts.verifier);
 }
 
 fn export_keys(opts: ExportKeysOpts) {
+    if opts.proof_system == ProofSystem::Plonk {
+        unimplemented!();
+    }
+    
     println!("Exporting {}...", opts.params);
     let params = load_params_file(&opts.params);
     let circuit_file = resolve_circuit_file(opts.circuit);
