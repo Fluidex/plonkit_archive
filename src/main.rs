@@ -21,8 +21,6 @@ use zkutil::circom_circuit::{
 struct Opts {
     #[clap(subcommand)]
     command: SubCommand,
-    #[clap(long = "proof_system", default_value = "groth16")]
-    proof_system: ProofSystem,
 }
 
 #[derive(Clap)]
@@ -86,6 +84,9 @@ struct ProveOpts {
     /// Output file for public inputs JSON
     #[clap(short = "o", long = "public", default_value = "public.json")]
     public: String,
+    /// Proof system
+    #[clap(long = "proof_system", default_value = "groth16")]
+    proof_system: ProofSystem,
 }
 
 /// A subcommand for verifying a SNARK proof
@@ -100,6 +101,9 @@ struct VerifyOpts {
     /// Public inputs JSON file
     #[clap(short = "i", long = "public", default_value = "public.json")]
     public: String,
+    /// Proof system
+    #[clap(long = "proof_system", default_value = "groth16")]
+    proof_system: ProofSystem,
 }
 
 /// A subcommand for generating a trusted setup parameters
@@ -111,6 +115,9 @@ struct SetupOpts {
     /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
     #[clap(short = "c", long = "circuit")]
     circuit: Option<String>,
+    /// Proof system
+    #[clap(long = "proof_system", default_value = "groth16")]
+    proof_system: ProofSystem,
 }
 
 /// A subcommand for generating a Solidity verifier smart contract
@@ -122,6 +129,9 @@ struct GenerateVerifierOpts {
     /// Output smart contract name
     #[clap(short = "v", long = "verifier", default_value = "Verifier.sol")]
     verifier: String,
+    /// Proof system
+    #[clap(long = "proof_system", default_value = "groth16")]
+    proof_system: ProofSystem,
 }
 
 /// A subcommand for exporting proving and verifying keys compatible with snarkjs/websnark
@@ -139,20 +149,21 @@ struct ExportKeysOpts {
     /// Output verifying key file
     #[clap(short = "v", long = "vk", default_value = "verification_key.json")]
     vk: String,
+    /// Proof system
+    #[clap(long = "proof_system", default_value = "groth16")]
+    proof_system: ProofSystem,
 }
 
 fn main() {
     let opts: Opts = Opts::parse();
 
-    println!("1111111111111111111");
-    println!("{}", opts.proof_system);
-    println!("1111111111111111111");
 
     match opts.command {
         SubCommand::Prove(o) => {
             prove(o);
         }
         SubCommand::Verify(o) => {
+            // println!("{}", o.proof_system);
             verify(o);
         }
         SubCommand::Setup(o) => {
