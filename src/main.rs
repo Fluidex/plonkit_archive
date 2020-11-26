@@ -202,6 +202,7 @@ fn verify(opts: VerifyOpts) {
             correct = plonk_verify().unwrap();
         }
         ProofSystem::Groth16 => {
+            // TODO: refactor loader for different proof_system
             let params = load_params_file(&opts.params);
             let proof = load_proof_json_file::<Bn256>(&opts.proof);
             let inputs = load_inputs_json_file::<Bn256>(&opts.public);
