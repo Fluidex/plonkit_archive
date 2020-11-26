@@ -4,9 +4,12 @@ extern crate zkutil;
 
 use bellman_ce::pairing::bn256::Bn256;
 use clap::Clap;
+use std::fmt::{Display, Formatter, Result as fmtResult};
 use std::fs;
 use std::fs::File;
 use std::path::Path;
+use std::str::FromStr;
+use std::string::ParseError as strParseError;
 use zkutil::circom_circuit::{
     create_rng, create_verifier_sol_file, generate_random_parameters, load_inputs_json_file, load_params_file, load_proof_json_file,
     proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file, r1cs_from_json_file, verification_key_json_file,
@@ -18,6 +21,37 @@ use zkutil::circom_circuit::{
 struct Opts {
     #[clap(subcommand)]
     command: SubCommand,
+    #[clap(long = "proof_system", default_value = "groth16")]
+    proof_system: ProofSystem,
+}
+
+#[derive(Clap)]
+enum ProofSystem {
+    Groth16,
+    Plonk,
+}
+
+impl Display for ProofSystem {
+    fn fmt(&self, f: &mut Formatter) -> fmtResult {
+        let printable = match *self {
+            ProofSystem::Groth16 => "groth16",
+            ProofSystem::Plonk => "plonk",
+        };
+        write!(f, "{}", printable)
+    }
+}
+
+impl FromStr for ProofSystem {
+    type Err = strParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "groth16" => Ok(Self::Groth16),
+            "plonk" => Ok(Self::Plonk),
+            // TODO:
+            _ => Ok(Self::Plonk),
+        }
+    }
 }
 
 #[derive(Clap)]
@@ -109,6 +143,11 @@ struct ExportKeysOpts {
 
 fn main() {
     let opts: Opts = Opts::parse();
+
+    println!("1111111111111111111");
+    println!("{}", opts.proof_system);
+    println!("1111111111111111111");
+
     match opts.command {
         SubCommand::Prove(o) => {
             prove(o);
