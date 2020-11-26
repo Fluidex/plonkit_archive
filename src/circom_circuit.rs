@@ -164,15 +164,15 @@ impl<'a, E: Engine> Circuit<E> for CircomCircuit<E> {
                 },
             )?;
         }
-        for i in self.aux_offset..(self.aux_offset + self.r1cs.num_aux) {
+        for i in 0..self.r1cs.num_aux {
             cs.alloc(
-                || format!("aux {}", i),
+                || format!("aux {}", i + self.aux_offset),
                 || {
                     Ok(match witness {
                         None => E::Fr::from_str("1").unwrap(),
                         Some(w) => match wire_mapping {
-                            None => w[i + self.r1cs.num_inputs - self.aux_offset],
-                            Some(m) => w[m[i + self.r1cs.num_inputs - self.aux_offset]],
+                            None => w[i + self.r1cs.num_inputs],
+                            Some(m) => w[m[i + self.r1cs.num_inputs]],
                         },
                     })
                 },
