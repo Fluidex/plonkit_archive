@@ -25,7 +25,7 @@ impl ProofSystem {
     pub fn aux_offset(&self) -> usize {
         match self {
             ProofSystem::Groth16 => 0,
-            ProofSystem::Plonk => 1,
+            ProofSystem::Plonk => 1, // plonk uses 1st var internally
         }
     }
 }

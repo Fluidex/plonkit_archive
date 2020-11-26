@@ -11,11 +11,9 @@ use std::iter::repeat;
 use std::str;
 use std::sync::Arc;
 
+use bellman_ce::groth16;
 use bellman_ce::{
-    groth16::{
-        create_random_proof, generate_random_parameters as generate_random_parameters2, prepare_prover, prepare_verifying_key,
-        verify_proof, Parameters, Proof,
-    },
+    groth16::{create_random_proof, generate_random_parameters as generate_random_parameters2, prepare_prover, Parameters, Proof},
     pairing::{
         bn256::{Bn256, Fq, Fq2, G1Affine, G2Affine},
         ff::PrimeField,
@@ -181,7 +179,7 @@ impl<'a, E: Engine> Circuit<E> for CircomCircuit<E> {
             if index < self.r1cs.num_inputs {
                 Index::Input(index)
             } else {
-                Index::Aux(index - self.r1cs.num_inputs + self.aux_offset) // plonk uses 1st var internally
+                Index::Aux(index - self.r1cs.num_inputs + self.aux_offset)
             }
         };
         let make_lc = |lc_data: Vec<(usize, E::Fr)>| {
@@ -213,16 +211,20 @@ pub fn generate_random_parameters<E: Engine, R: Rng>(circuit: CircomCircuit<E>, 
     generate_random_parameters2(circuit, &mut rng)
 }
 
-pub fn verify_circuit<E: Engine>(circuit: &CircomCircuit<E>, params: &Parameters<E>, proof: &Proof<E>) -> Result<bool, SynthesisError> {
+pub fn groth16_verify_circuit<E: Engine>(
+    circuit: &CircomCircuit<E>,
+    params: &Parameters<E>,
+    proof: &Proof<E>,
+) -> Result<bool, SynthesisError> {
     let inputs = match circuit.get_public_inputs() {
         None => return Err(SynthesisError::AssignmentMissing),
         Some(inp) => inp,
     };
-    verify_proof(&prepare_verifying_key(&params.vk), proof, &inputs)
+    groth16::verify_proof(&groth16::prepare_verifying_key(&params.vk), proof, &inputs)
 }
 
-pub fn verify<E: Engine>(params: &Parameters<E>, proof: &Proof<E>, inputs: &[E::Fr]) -> Result<bool, SynthesisError> {
-    verify_proof(&prepare_verifying_key(&params.vk), proof, &inputs)
+pub fn groth16_verify<E: Engine>(params: &Parameters<E>, proof: &Proof<E>, inputs: &[E::Fr]) -> Result<bool, SynthesisError> {
+    groth16::verify_proof(&groth16::prepare_verifying_key(&params.vk), proof, &inputs)
 }
 
 pub fn create_verifier_sol(params: &Parameters<Bn256>) -> String {
