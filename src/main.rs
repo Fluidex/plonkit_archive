@@ -196,16 +196,12 @@ fn verify(opts: VerifyOpts) {
     let correct: bool;
     match opts.proof_system {
         ProofSystem::Plonk => {
-            let vk = io::load_verification_key(&opts.vk);
+            let vk = io::load_verification_key::<Bn256>(&opts.vk);
             let proof = io::load_proof_json_file::<Bn256>(&opts.proof);
             correct = plonk_verify(&vk, &proof).unwrap();
         }
         ProofSystem::Groth16 => {
             panic!("Deprecated");
-            // let params = load_params_file(&opts.params);
-            // let proof = load_proof_json_file::<Bn256>(&opts.proof);
-            // let inputs = load_inputs_json_file::<Bn256>(&opts.public);
-            // correct = groth16_verify(&params, &proof, &inputs).unwrap();
         }
     }
 
