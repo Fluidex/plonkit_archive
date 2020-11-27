@@ -9,23 +9,9 @@ use std::fs::File;
 use std::path::Path;
 use std::str;
 use zkutil::circom_circuit::{
-    create_rng,
-    create_verifier_sol_file,
-    generate_random_parameters,
-    groth16_verify,
-    load_inputs_json_file,
-    load_params_file,
-    load_proof_json_file,
-    proof_to_json_file,
-    prove as prove2,
-    proving_key_json_file,
-    r1cs_from_bin_file,
-    r1cs_from_json_file,
-    verification_key_json_file,
-    witness_from_json_file,
-    CircomCircuit,
-    R1CS,
-    // plonk_verify,
+    create_rng, create_verifier_sol_file, generate_random_parameters, groth16_verify, load_inputs_json_file, load_params_file,
+    load_proof_json_file, plonk_verify, proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file,
+    r1cs_from_json_file, verification_key_json_file, witness_from_json_file, CircomCircuit, R1CS,
 };
 use zkutil::io;
 use zkutil::proofsys_type::ProofSystem;
@@ -77,15 +63,12 @@ struct ProveOpts {
 /// A subcommand for verifying a SNARK proof
 #[derive(Clap)]
 struct VerifyOpts {
-    /// Snark trusted setup parameters file
-    #[clap(short = "p", long = "params", default_value = "params.bin")]
-    params: String,
     /// Proof JSON file
     #[clap(short = "r", long = "proof", default_value = "proof.json")]
     proof: String,
-    /// Public inputs JSON file
-    #[clap(short = "i", long = "public", default_value = "public.json")]
-    public: String,
+    /// Verification key file
+    #[clap(short = "v", long = "verification_key", default_value = "vk.bin")]
+    vk: String,
     /// Proof system
     #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
@@ -214,8 +197,8 @@ fn verify(opts: VerifyOpts) {
     match opts.proof_system {
         ProofSystem::Plonk => {
             let vk = io::load_verification_key(&opts.vk);
-            let proof = io::load_proof_json_file(&opts.proof);
-            correct = plonk_verify(vk, proof).unwrap();
+            let proof = io::load_proof_json_file::<Bn256>(&opts.proof);
+            correct = plonk_verify(&vk, &proof).unwrap();
         }
         ProofSystem::Groth16 => {
             panic!("Deprecated");
