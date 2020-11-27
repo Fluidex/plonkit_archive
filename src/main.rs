@@ -56,7 +56,7 @@ struct ProveOpts {
     #[clap(short = "o", long = "public", default_value = "public.json")]
     public: String,
     /// Proof system
-    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "groth16")]
     proof_system: ProofSystem,
 }
 
@@ -64,7 +64,7 @@ struct ProveOpts {
 #[derive(Clap)]
 struct VerifyOpts {
     /// Proof JSON file
-    #[clap(short = "p", long = "proof", default_value = "proof.json")]
+    #[clap(short = "p", long = "proof", default_value = "proof.bin")]
     proof: String,
     /// Verification key file
     #[clap(short = "v", long = "verification_key", default_value = "vk.bin")]
@@ -84,7 +84,7 @@ struct SetupOpts {
     #[clap(short = "c", long = "circuit")]
     circuit: Option<String>,
     /// Proof system
-    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "groth16")]
     proof_system: ProofSystem,
 }
 
@@ -98,7 +98,7 @@ struct GenerateVerifierOpts {
     #[clap(short = "v", long = "verifier", default_value = "Verifier.sol")]
     verifier: String,
     /// Proof system
-    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "groth16")]
     proof_system: ProofSystem,
 }
 
@@ -118,7 +118,7 @@ struct ExportKeysOpts {
     #[clap(short = "v", long = "vk", default_value = "verification_key.json")]
     vk: String,
     /// Proof system
-    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
+    #[clap(short = "s", long = "proof_system", default_value = "groth16")]
     proof_system: ProofSystem,
 }
 
@@ -197,7 +197,7 @@ fn verify(opts: VerifyOpts) {
     match opts.proof_system {
         ProofSystem::Plonk => {
             let vk = io::load_verification_key::<Bn256>(&opts.vk);
-            let proof = io::load_proof_json_file::<Bn256>(&opts.proof);
+            let proof = io::load_proof::<Bn256>(&opts.proof);
             correct = plonk_verify(&vk, &proof).unwrap();
         }
         ProofSystem::Groth16 => {
