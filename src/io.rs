@@ -5,7 +5,10 @@ use bellman_ce::{
         ff::ScalarEngine,
         CurveAffine, Engine,
     },
-    plonk::{better_cs::cs::PlonkCsWidth4WithNextStepParams, Proof as PlonkProof},
+    plonk::{
+        better_cs::cs::PlonkCsWidth4WithNextStepParams, better_cs::keys::Proof,
+        commitments::transcript::keccak_transcript::RollingKeccakTranscript, VerificationKey,
+    },
     source::QueryDensity,
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
