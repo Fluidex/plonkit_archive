@@ -64,7 +64,7 @@ struct ProveOpts {
 #[derive(Clap)]
 struct VerifyOpts {
     /// Proof JSON file
-    #[clap(short = "r", long = "proof", default_value = "proof.json")]
+    #[clap(short = "p", long = "proof", default_value = "proof.json")]
     proof: String,
     /// Verification key file
     #[clap(short = "v", long = "verification_key", default_value = "vk.bin")]
