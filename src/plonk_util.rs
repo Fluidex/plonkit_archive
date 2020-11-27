@@ -89,6 +89,10 @@ impl<E: Engine> SetupForStepByStepProver<E> {
             self.key_monomial_form.as_ref().expect("Setup should have universal setup struct"),
         )?;
         log::info!("proof generated");
+        let proof_path = "testdata/poseidon/proof.bin";
+        let writer = File::create(proof_path).unwrap();
+        proof.write(writer).unwrap();
+
         let valid = verify::<_, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(&proof, &vk.0)?;
         anyhow::ensure!(valid, "proof for block is invalid");
         Ok(())
