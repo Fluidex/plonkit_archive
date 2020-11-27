@@ -200,7 +200,7 @@ fn verify(opts: VerifyOpts) {
             let proof = io::load_proof::<Bn256>(&opts.proof);
             correct = plonk_verify(&vk, &proof).unwrap();
         }
-        ProofSystem::Groth16 => {
+        _ => {
             panic!("Deprecated");
         }
     }
