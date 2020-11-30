@@ -24,9 +24,8 @@ cargo run --release prove -m $SETUP_DIR/setup_2^20.key -s plonk -c $CIRCUIT_DIR/
 # echo "Step5: dump l....."
 # cargo run --release prove -s plonk -c $CIRCUIT_DIR/circuit.r1cs.json -w $CIRCUIT_DIR/witness.json
 
-# # TODO:
-# echo "Step6: prove with key_monomial_form & key_lagrange_form"
-# cargo run --release prove -s plonk -c $CIRCUIT_DIR/circuit.r1cs.json -w $CIRCUIT_DIR/witness.json
+echo "Step6: prove with key_monomial_form & key_lagrange_form"
+cargo run --release prove -m $SETUP_DIR/setup_2^20.key -l $SETUP_DIR/setup_2^20_lagrange.key -s plonk -c $CIRCUIT_DIR/circuit.r1cs.json -w $CIRCUIT_DIR/witness.json -p $CIRCUIT_DIR/proof.bin
 
 echo "Step7: verify"
 cargo run --release verify -s plonk -p $CIRCUIT_DIR/proof.bin -v $CIRCUIT_DIR/vk.bin
