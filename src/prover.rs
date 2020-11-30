@@ -1,4 +1,4 @@
-// Most of this file is modified from source codes of [Matter Labs's zkSync](https://github.com/matter-labs/zksync)
+// Most of this file is forked from source codes of [Matter Labs's zkSync](https://github.com/matter-labs/zksync)
 use bellman_ce::pairing::Engine;
 use bellman_ce::{
     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
@@ -9,8 +9,8 @@ use bellman_ce::{
     Circuit, ScalarEngine, SynthesisError,
 };
 
-pub const SETUP_MIN_POW2: u32 = 20;
-pub const SETUP_MAX_POW2: u32 = 26;
+const SETUP_MIN_POW2: u32 = 20;
+const SETUP_MAX_POW2: u32 = 26;
 
 pub struct SetupForProver<E: Engine> {
     setup_polynomials: SetupPolynomials<E, PlonkCsWidth4WithNextStepParams>,
