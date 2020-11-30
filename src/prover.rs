@@ -1,18 +1,18 @@
 // // Most of this file is modified from source codes of [Matter Labs](https://github.com/matter-labs)
 // use anyhow::format_err;
-// use bellman_ce::pairing::Engine;
-// use bellman_ce::{
-//     bn256::Bn256,
-//     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
-//     plonk::is_satisfied,
-//     plonk::is_satisfied_using_one_shot_check,
-//     plonk::{
-//         better_cs::cs::PlonkCsWidth4WithNextStepParams, commitments::transcript::keccak_transcript::RollingKeccakTranscript,
-//         make_verification_key, prove, prove_by_steps, setup, transpile, transpile_with_gates_count, verify, SetupPolynomials,
-//         TranspilationVariant, VerificationKey,
-//     },
-//     Circuit, ScalarEngine,
-// };
+use bellman_ce::pairing::Engine;
+use bellman_ce::{
+    bn256::Bn256,
+    kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
+    plonk::is_satisfied,
+    plonk::is_satisfied_using_one_shot_check,
+    plonk::{
+        better_cs::cs::PlonkCsWidth4WithNextStepParams, commitments::transcript::keccak_transcript::RollingKeccakTranscript,
+        make_verification_key, prove, prove_by_steps, setup, transpile, transpile_with_gates_count, verify, Proof, SetupPolynomials,
+        TranspilationVariant, VerificationKey,
+    },
+    Circuit, ScalarEngine, SynthesisError,
+};
 // use std::io::BufReader;
 // use std::path::PathBuf;
 // use std::time::Instant;
@@ -115,58 +115,57 @@ pub const SETUP_MAX_POW2: u32 = 26;
 //     }
 // }
 
-// pub struct SetupForProver<E: Engine> {
-//     setup_polynomials: SetupPolynomials<E, PlonkCsWidth4WithNextStepParams>,
-//     hints: Vec<(usize, TranspilationVariant)>,
-//     setup_power_of_two: u32,
-//     key_monomial_form: Option<Crs<E, CrsForMonomialForm>>,
-//     key_lagrange_form: Option<Crs<E, CrsForLagrangeForm>>,
-// }
+pub struct SetupForProver<E: Engine> {
+    setup_polynomials: SetupPolynomials<E, PlonkCsWidth4WithNextStepParams>,
+    hints: Vec<(usize, TranspilationVariant)>,
+    setup_power_of_two: u32,
+    key_monomial_form: Option<Crs<E, CrsForMonomialForm>>,
+    key_lagrange_form: Option<Crs<E, CrsForLagrangeForm>>,
+}
 
-// impl<E: Engine> SetupForProver<E> {
-//     pub fn prepare_setup_for_prover<C: Circuit<E> + Clone>(circuit: C) -> Result<Self, anyhow::Error> {
-//         let hints = transpile(circuit.clone())?;
-//         let setup_polynomials = setup(circuit, &hints)?;
-//         let size = setup_polynomials.n.next_power_of_two().trailing_zeros();
-//         let setup_power_of_two = std::cmp::max(size, SETUP_MIN_POW2); // for exit circuit
-//         let key_monomial_form = Some(get_universal_setup_monomial_form(setup_power_of_two)?);
-//         let key_lagrange_form = Some(get_universal_setup_lagrange_form(setup_power_of_two)?);
-//         Ok(SetupForProver {
-//             setup_power_of_two,
-//             setup_polynomials,
-//             hints,
-//             key_monomial_form,
-//             key_lagrange_form,
-//         })
-//     }
+impl<E: Engine> SetupForProver<E> {
+    pub fn prepare_setup_for_prover<C: Circuit<E> + Clone>(circuit: C) -> Result<Self, anyhow::Error> {
+        let hints = transpile(circuit.clone())?;
+        let setup_polynomials = setup(circuit, &hints)?;
+        let size = setup_polynomials.n.next_power_of_two().trailing_zeros();
+        let setup_power_of_two = std::cmp::max(size, SETUP_MIN_POW2); // for exit circuit
 
-//     pub fn gen_step_by_step_proof_using_prepared_setup<C: Circuit<E> + Clone>(
-//         &self,
-//         circuit: C,
-//         vk: &PlonkVerificationKey<E>,
-//     ) -> Result<(), anyhow::Error> {
-//         let timer = Instant::now();
-//         let proof = prove::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
-//             circuit,
-//             &self.hints,
-//             &self.setup_polynomials,
-//             self.key_monomial_form
-//                 .as_ref()
-//                 .expect("Setup should have universal setup struct (monomial)"),
-//             self.key_lagrange_form
-//                 .as_ref()
-//                 .expect("Setup should have universal setup struct (lagrange)"),
-//         )?;
-//         log::info!("Proving takes {:?}", timer.elapsed());
-//         log::info!("Proof generated");
+        //         let key_monomial_form = Some(get_universal_setup_monomial_form(setup_power_of_two)?);
+        //         let key_lagrange_form = Some(get_universal_setup_lagrange_form(setup_power_of_two)?);
 
-//         let proof_path = "testdata/poseidon/proof.bin";
-//         let writer = File::create(proof_path).unwrap();
-//         proof.write(writer).unwrap();
-//         log::info!("Proof saved to {}", proof_path);
+        Ok(SetupForProver {
+            setup_power_of_two,
+            setup_polynomials,
+            hints,
+            key_monomial_form,
+            key_lagrange_form,
+        })
+    }
 
-//         let valid = verify::<_, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(&proof, &vk.0)?;
-//         anyhow::ensure!(valid, "proof for block is invalid");
-//         Ok(())
-//     }
-// }
+    pub fn prove<C: Circuit<E> + Clone>(
+        &self,
+        circuit: C,
+        //         vk: &PlonkVerificationKey<E>,
+    ) -> Result<Proof<E, PlonkCsWidth4WithNextStepParams>, SynthesisError> {
+        match self.key_lagrange_form {
+            Some(_) => prove::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
+                circuit,
+                &self.hints,
+                &self.setup_polynomials,
+                self.key_monomial_form
+                    .as_ref()
+                    .expect("Setup should have universal setup struct (monomial)"),
+                self.key_lagrange_form
+                    .as_ref()
+                    .expect("Setup should have universal setup struct (lagrange)"),
+            ),
+            None => prove_by_steps::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
+                circuit,
+                &self.hints,
+                &self.setup_polynomials,
+                None,
+                self.key_monomial_form.as_ref().expect("Setup should have universal setup struct"),
+            ),
+        }
+    }
+}
