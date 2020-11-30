@@ -63,7 +63,10 @@ impl<E: Engine> SetupForProver<E> {
     }
 
     pub fn get_srs_lagrange_form_from_monomial_form(&self) -> Crs<E, CrsForLagrangeForm> {
-        let worker = Worker::new();
-        Crs::<E, CrsForLagrangeForm>::from_powers(&self.key_monomial_form, self.setup_polynomials.n.next_power_of_two(), &worker)
+        Crs::<E, CrsForLagrangeForm>::from_powers(
+            &self.key_monomial_form,
+            self.setup_polynomials.n.next_power_of_two(),
+            &Worker::new(),
+        )
     }
 }
