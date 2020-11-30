@@ -57,7 +57,7 @@ struct ProveOpts {
     #[clap(short = "p", long = "proof", default_value = "proof.bin")]
     proof: String,
     /// Proof system
-    #[clap(short = "s", long = "proof_system", default_value = "groth16")]
+    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
 }
 
