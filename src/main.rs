@@ -42,9 +42,6 @@ enum SubCommand {
 /// A subcommand for generating a SNARK proof
 #[derive(Clap)]
 struct ProveOpts {
-    // /// Plonk universal setup power_of_two
-    // #[clap(short = "o", long = "power_of_two", default_value = "20")]
-    // power_of_two: u32,
     /// Plonk universal setup srs file in monomial form
     #[clap(short = "m", long = "srs_monomial_form")]
     srs_monomial_form: String,
@@ -60,11 +57,6 @@ struct ProveOpts {
     /// Output file for proof BIN
     #[clap(short = "p", long = "proof", default_value = "proof.bin")]
     proof: String,
-
-    // TODO:
-    // /// Output file for public inputs JSON
-    // #[clap(short = "o", long = "public", default_value = "public.json")]
-    // public: String,
     /// Proof system
     #[clap(short = "s", long = "proof_system", default_value = "groth16")]
     proof_system: ProofSystem,
@@ -192,8 +184,12 @@ fn prove(opts: ProveOpts) {
         aux_offset: opts.proof_system.aux_offset(),
     };
 
-    // prover::check_power_of_two(&opts.power_of_two);
-    let setup = prover::SetupForProver::prepare_setup_for_prover(circuit).expect("prepare err");
+    let setup = prover::SetupForProver::prepare_setup_for_prover(
+        circuit.clone(),
+        io::load_key_monomial_form(&opts.srs_monomial_form),
+        io::try_load_key_lagrange_form(opts.srs_lagrange_form),
+    )
+    .expect("prepare err");
     let timer = Instant::now();
     let proof = setup.prove(circuit).unwrap();
     log::info!("Proving takes {:?}", timer.elapsed());
