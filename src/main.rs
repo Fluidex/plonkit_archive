@@ -195,13 +195,7 @@ fn prove(opts: ProveOpts) {
     // prover::check_power_of_two(&opts.power_of_two);
     let setup = prover::SetupForProver::prepare_setup_for_prover(circuit).expect("prepare err");
     let timer = Instant::now();
-    let proof = setup.prove(
-        circuit,
-        //         &self.hints,
-        //         &self.setup_polynomials,
-        //         None,
-        //         self.key_monomial_form.as_ref().expect("Setup should have universal setup struct"),
-    )?;
+    let proof = setup.prove(circuit).unwrap();
     log::info!("Proving takes {:?}", timer.elapsed());
     let writer = File::create(&opts.proof).unwrap();
     proof.write(writer).unwrap();
