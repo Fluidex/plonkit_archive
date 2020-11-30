@@ -189,6 +189,7 @@ fn prove(opts: ProveOpts) {
         io::maybe_load_key_lagrange_form(opts.srs_lagrange_form),
     )
     .expect("prepare err");
+
     println!("Proving...");
     let timer = Instant::now();
     let proof = setup.prove(circuit).unwrap();
