@@ -43,10 +43,10 @@ enum SubCommand {
 /// A subcommand for dumping SRS in lagrange form
 #[derive(Clap)]
 struct DumpLagrangeOpts {
-    /// Plonk universal setup srs file in monomial form
+    /// Source file for Plonk universal setup srs file in monomial form
     #[clap(short = "m", long = "srs_monomial_form")]
     srs_monomial_form: String,
-    /// Plonk universal setup srs file in lagrange form
+    /// Output file for Plonk universal setup srs file in lagrange form
     #[clap(short = "l", long = "srs_lagrange_form")]
     srs_lagrange_form: String,
     /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
@@ -63,10 +63,10 @@ struct DumpLagrangeOpts {
 /// A subcommand for generating a SNARK proof
 #[derive(Clap)]
 struct ProveOpts {
-    /// Plonk universal setup srs file in monomial form
+    /// Source file for Plonk universal setup srs file in monomial form
     #[clap(short = "m", long = "srs_monomial_form")]
     srs_monomial_form: String,
-    /// Plonk universal setup srs file in lagrange form
+    /// Source file for Plonk universal setup srs file in lagrange form
     #[clap(short = "l", long = "srs_lagrange_form")]
     srs_lagrange_form: Option<String>,
     /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
