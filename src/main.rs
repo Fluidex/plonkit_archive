@@ -197,22 +197,6 @@ fn prove(opts: ProveOpts) {
         "setup power of two is not in the correct range"
     );
 
-    // let rng = create_rng();
-    // let params = load_params_file(&opts.params);
-    // let circuit_file = resolve_circuit_file(opts.circuit);
-    // println!("Loading circuit from {}...", circuit_file);
-    // let circuit = CircomCircuit {
-    //     r1cs: load_r1cs(&circuit_file),
-    //     witness: Some(witness_from_json_file::<Bn256>(&opts.witness)),
-    //     wire_mapping: None,
-    //     aux_offset: opts.proof_system.aux_offset(),
-    // };
-    // println!("Proving...");
-    // let proof = prove2(circuit.clone(), &params, rng).unwrap();
-    // proof_to_json_file(&proof, &opts.proof).unwrap();
-    // fs::write(&opts.public, circuit.get_public_inputs_json().as_bytes()).unwrap();
-    // println!("Saved {} and {}", opts.proof, opts.public);
-
     let timer = Instant::now();
     // let proof = prove_by_steps::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
     //         circuit,
