@@ -41,6 +41,9 @@ enum SubCommand {
 /// A subcommand for generating a SNARK proof
 #[derive(Clap)]
 struct ProveOpts {
+    /// Plonk universal setup power_of_two
+    #[clap(short = "o", long = "power_of_two", default_value = "20")]
+    power_of_two: u32,
     /// Plonk universal setup srs file in monomial form
     #[clap(short = "m", long = "srs_monomial_form")]
     srs_monomial_form: String,
