@@ -61,5 +61,3 @@ impl<E: Engine> SetupForProver<E> {
         }
     }
 }
-// .as_ref()
-// .expect("Setup should have universal setup struct (monomial)"),
