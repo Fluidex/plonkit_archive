@@ -16,9 +16,11 @@ echo "Step2: compile circuit and calculate witness using snarkjs"
 echo "Step3: test prove and verify"
 RUST_LOG=info cargo test --release simple_plonk_test
 
+# TODO:
 echo "Step4: prove with key_monomial_form"
 cargo run --release prove -s plonk -c $CIRCUIT_DIR/circuit.r1cs.json -w $CIRCUIT_DIR/witness.json
 
+# TODO:
 echo "Step4: prove with key_monomial_form & key_lagrange_form"
 cargo run --release prove -s plonk -c $CIRCUIT_DIR/circuit.r1cs.json -w $CIRCUIT_DIR/witness.json
 
