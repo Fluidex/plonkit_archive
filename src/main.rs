@@ -187,7 +187,7 @@ fn prove(opts: ProveOpts) {
     let setup = prover::SetupForProver::prepare_setup_for_prover(
         circuit.clone(),
         io::load_key_monomial_form(&opts.srs_monomial_form),
-        io::try_load_key_lagrange_form(opts.srs_lagrange_form),
+        io::maybe_load_key_lagrange_form(opts.srs_lagrange_form),
     )
     .expect("prepare err");
     let timer = Instant::now();
