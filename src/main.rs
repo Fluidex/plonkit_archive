@@ -40,21 +40,24 @@ enum SubCommand {
 /// A subcommand for generating a SNARK proof
 #[derive(Clap)]
 struct ProveOpts {
-    /// Snark trusted setup parameters file
-    #[clap(short = "p", long = "params", default_value = "params.bin")]
-    params: String,
+    /// Plonk universal setup key file
+    #[clap(short = "u", long = "key_setup", default_value = "setup.key")]
+    setup: String,
     /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
     #[clap(short = "c", long = "circuit")]
     circuit: Option<String>,
     /// Witness JSON file
     #[clap(short = "w", long = "witness", default_value = "witness.json")]
     witness: String,
-    /// Output file for proof JSON
-    #[clap(short = "r", long = "proof", default_value = "proof.json")]
+    /// Output file for proof BIN
+    #[clap(short = "p", long = "proof", default_value = "proof.bin")]
     proof: String,
-    /// Output file for public inputs JSON
-    #[clap(short = "o", long = "public", default_value = "public.json")]
-    public: String,
+
+    // TODO:
+    // /// Output file for public inputs JSON
+    // #[clap(short = "o", long = "public", default_value = "public.json")]
+    // public: String,
+
     /// Proof system
     #[clap(short = "s", long = "proof_system", default_value = "groth16")]
     proof_system: ProofSystem,
@@ -63,7 +66,7 @@ struct ProveOpts {
 /// A subcommand for verifying a SNARK proof
 #[derive(Clap)]
 struct VerifyOpts {
-    /// Proof JSON file
+    /// Proof BIN file
     #[clap(short = "p", long = "proof", default_value = "proof.bin")]
     proof: String,
     /// Verification key file
@@ -171,25 +174,25 @@ fn resolve_circuit_file(filename: Option<String>) -> String {
 }
 
 fn prove(opts: ProveOpts) {
-    if opts.proof_system == ProofSystem::Plonk {
-        unimplemented!();
+    if opts.proof_system != ProofSystem::Plonk {
+        panic!("Deprecated");
     }
 
-    let rng = create_rng();
-    let params = load_params_file(&opts.params);
-    let circuit_file = resolve_circuit_file(opts.circuit);
-    println!("Loading circuit from {}...", circuit_file);
-    let circuit = CircomCircuit {
-        r1cs: load_r1cs(&circuit_file),
-        witness: Some(witness_from_json_file::<Bn256>(&opts.witness)),
-        wire_mapping: None,
-        aux_offset: opts.proof_system.aux_offset(),
-    };
-    println!("Proving...");
-    let proof = prove2(circuit.clone(), &params, rng).unwrap();
-    proof_to_json_file(&proof, &opts.proof).unwrap();
-    fs::write(&opts.public, circuit.get_public_inputs_json().as_bytes()).unwrap();
-    println!("Saved {} and {}", opts.proof, opts.public);
+    // let rng = create_rng();
+    // let params = load_params_file(&opts.params);
+    // let circuit_file = resolve_circuit_file(opts.circuit);
+    // println!("Loading circuit from {}...", circuit_file);
+    // let circuit = CircomCircuit {
+    //     r1cs: load_r1cs(&circuit_file),
+    //     witness: Some(witness_from_json_file::<Bn256>(&opts.witness)),
+    //     wire_mapping: None,
+    //     aux_offset: opts.proof_system.aux_offset(),
+    // };
+    // println!("Proving...");
+    // let proof = prove2(circuit.clone(), &params, rng).unwrap();
+    // proof_to_json_file(&proof, &opts.proof).unwrap();
+    // fs::write(&opts.public, circuit.get_public_inputs_json().as_bytes()).unwrap();
+    // println!("Saved {} and {}", opts.proof, opts.public);
 }
 
 fn verify(opts: VerifyOpts) {
