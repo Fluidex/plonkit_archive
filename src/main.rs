@@ -182,11 +182,6 @@ fn resolve_circuit_file(filename: Option<String>) -> String {
 
 fn prove(opts: ProveOpts) {
     assert!(opts.proof_system == ProofSystem::Plonk, "Deprecated");
-    // TODO: refactor
-    assert!(
-        (prover::SETUP_MIN_POW2..=prover::SETUP_MAX_POW2).contains(&opts.power_of_two),
-        "setup power of two is not in the correct range"
-    );
 
     let circuit_file = resolve_circuit_file(opts.circuit);
     println!("Loading circuit from {}...", circuit_file);
@@ -197,6 +192,7 @@ fn prove(opts: ProveOpts) {
         aux_offset: opts.proof_system.aux_offset(),
     };
 
+    prover::check_power_of_two(&opts.power_of_two);
     let setup = prover::SetupForProver::prepare_setup_for_prover(circuit).expect("prepare err");
 
     let timer = Instant::now();

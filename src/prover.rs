@@ -24,6 +24,14 @@ use bellman_ce::{
 pub const SETUP_MIN_POW2: u32 = 20;
 pub const SETUP_MAX_POW2: u32 = 26;
 
+fn check_power_of_two(power_of_two: &u32) -> std::result::Result<(), anyhow::Error> {
+    anyhow::ensure!(
+        (SETUP_MIN_POW2..=SETUP_MAX_POW2).contains(&power_of_two),
+        "setup power of two is not in the correct range"
+    );
+    Ok(())
+}
+
 // fn base_universal_setup_dir() -> Result<PathBuf, anyhow::Error> {
 //     let mut dir = PathBuf::new();
 //     // root is used by default for provers
