@@ -194,18 +194,17 @@ fn prove(opts: ProveOpts) {
 
     prover::check_power_of_two(&opts.power_of_two);
     let setup = prover::SetupForProver::prepare_setup_for_prover(circuit).expect("prepare err");
-
     let timer = Instant::now();
-    // let proof = prove_by_steps::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
-    //         circuit,
-    //         &self.hints,
-    //         &self.setup_polynomials,
-    //         None,
-    //         self.key_monomial_form.as_ref().expect("Setup should have universal setup struct"),
-    //     )?;
+    let proof = setup.prove(
+        circuit,
+        //         &self.hints,
+        //         &self.setup_polynomials,
+        //         None,
+        //         self.key_monomial_form.as_ref().expect("Setup should have universal setup struct"),
+    )?;
     log::info!("Proving takes {:?}", timer.elapsed());
     let writer = File::create(&opts.proof).unwrap();
-    // proof.write(writer).unwrap();
+    proof.write(writer).unwrap();
     println!("Proof saved to {}", opts.proof);
 }
 
