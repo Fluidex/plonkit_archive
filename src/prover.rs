@@ -1,11 +1,12 @@
 // Most of this file is forked from source codes of [Matter Labs's zkSync](https://github.com/matter-labs/zksync)
-use bellman_ce::pairing::Engine;
 use bellman_ce::{
     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
+    pairing::Engine,
     plonk::{
         better_cs::cs::PlonkCsWidth4WithNextStepParams, commitments::transcript::keccak_transcript::RollingKeccakTranscript, prove,
         prove_by_steps, setup, transpile, Proof, SetupPolynomials, TranspilationVariant,
     },
+    worker::Worker,
     Circuit, ScalarEngine, SynthesisError,
 };
 
@@ -59,5 +60,10 @@ impl<E: Engine> SetupForProver<E> {
                 &self.key_monomial_form,
             ),
         }
+    }
+
+    pub fn get_srs_lagrange_form_from_monomial_form(&self) -> Crs<E, CrsForLagrangeForm> {
+        let worker = Worker::new();
+        Crs::<E, CrsForLagrangeForm>::from_powers(&self.key_monomial_form, self.setup_polynomials.n.next_power_of_two(), &worker)
     }
 }

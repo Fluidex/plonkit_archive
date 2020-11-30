@@ -26,6 +26,8 @@ struct Opts {
 
 #[derive(Clap)]
 enum SubCommand {
+    /// Dump "SRS in lagrange form" from a "SRS in monomial form"
+    DumpLagrange(DumpLagrangeOpts),
     /// Generate a SNARK proof
     Prove(ProveOpts),
     /// Verify a SNARK proof
@@ -36,6 +38,26 @@ enum SubCommand {
     GenerateVerifier(GenerateVerifierOpts),
     /// Export proving and verifying keys compatible with snarkjs/websnark
     ExportKeys(ExportKeysOpts),
+}
+
+/// A subcommand for dumping SRS in lagrange form
+#[derive(Clap)]
+struct DumpLagrangeOpts {
+    /// Plonk universal setup srs file in monomial form
+    #[clap(short = "m", long = "srs_monomial_form")]
+    srs_monomial_form: String,
+    /// Plonk universal setup srs file in lagrange form
+    #[clap(short = "l", long = "srs_lagrange_form")]
+    srs_lagrange_form: String,
+    /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
+    #[clap(short = "c", long = "circuit")]
+    circuit: Option<String>,
+    /// Witness JSON file
+    #[clap(short = "w", long = "witness", default_value = "witness.json")]
+    witness: String,
+    /// Proof system
+    #[clap(short = "s", long = "proof_system", default_value = "groth16")]
+    proof_system: ProofSystem,
 }
 
 /// A subcommand for generating a SNARK proof
@@ -126,6 +148,10 @@ struct ExportKeysOpts {
 fn main() {
     let opts: Opts = Opts::parse();
     match opts.command {
+        SubCommand::DumpLagrange(o) => {
+            println!("Running with proof system: {:?}", o.proof_system);
+            dump_lagrange(o);
+        }
         SubCommand::Prove(o) => {
             println!("Running with proof system: {:?}", o.proof_system);
             prove(o);
@@ -169,6 +195,28 @@ fn resolve_circuit_file(filename: Option<String>) -> String {
             }
         }
     }
+}
+
+fn dump_lagrange(opts: DumpLagrangeOpts) {
+    assert!(opts.proof_system == ProofSystem::Plonk, "Deprecated");
+
+    let circuit_file = resolve_circuit_file(opts.circuit);
+    println!("Loading circuit from {}...", circuit_file);
+    let circuit = CircomCircuit {
+        r1cs: load_r1cs(&circuit_file),
+        witness: Some(witness_from_json_file::<Bn256>(&opts.witness)),
+        wire_mapping: None,
+        aux_offset: opts.proof_system.aux_offset(),
+    };
+
+    let setup =
+        prover::SetupForProver::prepare_setup_for_prover(circuit.clone(), io::load_key_monomial_form(&opts.srs_monomial_form), None)
+            .expect("prepare err");
+
+    let key_lagrange_form = setup.get_srs_lagrange_form_from_monomial_form();
+    let writer = File::create(&opts.srs_lagrange_form).unwrap();
+    key_lagrange_form.write(writer).unwrap();
+    println!("srs_lagrange_form saved to {}", opts.srs_lagrange_form);
 }
 
 fn prove(opts: ProveOpts) {
