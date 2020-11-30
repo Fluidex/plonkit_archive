@@ -1,4 +1,4 @@
-// Most of this file is modified from source codes of [Matter Labs](https://github.com/matter-labs)
+// Most of this file is modified from source codes of [Matter Labs's zkSync](https://github.com/matter-labs/zksync)
 use bellman_ce::pairing::Engine;
 use bellman_ce::{
     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
