@@ -1,14 +1,10 @@
 // Most of this file is modified from source codes of [Matter Labs](https://github.com/matter-labs)
 use bellman_ce::pairing::Engine;
 use bellman_ce::{
-    bn256::Bn256,
     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
-    plonk::is_satisfied,
-    plonk::is_satisfied_using_one_shot_check,
     plonk::{
-        better_cs::cs::PlonkCsWidth4WithNextStepParams, commitments::transcript::keccak_transcript::RollingKeccakTranscript,
-        make_verification_key, prove, prove_by_steps, setup, transpile, transpile_with_gates_count, verify, Proof, SetupPolynomials,
-        TranspilationVariant, VerificationKey,
+        better_cs::cs::PlonkCsWidth4WithNextStepParams, commitments::transcript::keccak_transcript::RollingKeccakTranscript, prove,
+        prove_by_steps, setup, transpile, Proof, SetupPolynomials, TranspilationVariant,
     },
     Circuit, ScalarEngine, SynthesisError,
 };
@@ -19,7 +15,6 @@ pub const SETUP_MAX_POW2: u32 = 26;
 pub struct SetupForProver<E: Engine> {
     setup_polynomials: SetupPolynomials<E, PlonkCsWidth4WithNextStepParams>,
     hints: Vec<(usize, TranspilationVariant)>,
-    setup_power_of_two: u32,
     key_monomial_form: Crs<E, CrsForMonomialForm>,
     key_lagrange_form: Option<Crs<E, CrsForLagrangeForm>>,
 }
@@ -40,7 +35,6 @@ impl<E: Engine> SetupForProver<E> {
         );
 
         Ok(SetupForProver {
-            setup_power_of_two,
             setup_polynomials,
             hints,
             key_monomial_form,

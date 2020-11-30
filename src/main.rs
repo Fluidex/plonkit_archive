@@ -4,15 +4,14 @@ extern crate zkutil;
 
 use bellman_ce::pairing::bn256::Bn256;
 use clap::Clap;
-use std::fs;
 use std::fs::File;
 use std::path::Path;
 use std::str;
 use std::time::Instant;
 use zkutil::circom_circuit::{
-    create_rng, create_verifier_sol_file, generate_random_parameters, groth16_verify, load_inputs_json_file, load_params_file,
-    load_proof_json_file, plonk_verify, proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file,
-    r1cs_from_json_file, verification_key_json_file, witness_from_json_file, CircomCircuit, R1CS,
+    create_rng, create_verifier_sol_file, generate_random_parameters, groth16_verify, load_params_file, plonk_verify,
+    proving_key_json_file, r1cs_from_bin_file, r1cs_from_json_file, verification_key_json_file, witness_from_json_file, CircomCircuit,
+    R1CS,
 };
 use zkutil::io;
 use zkutil::proofsys_type::ProofSystem;
