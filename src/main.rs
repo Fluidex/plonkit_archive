@@ -40,9 +40,12 @@ enum SubCommand {
 /// A subcommand for generating a SNARK proof
 #[derive(Clap)]
 struct ProveOpts {
-    /// Plonk universal setup key file
-    #[clap(short = "u", long = "key_setup", default_value = "setup.key")]
-    setup: String,
+    /// Plonk universal setup srs file in monomial form
+    #[clap(short = "m", long = "srs_monomial_form")]
+    srs_monomial_form: String,
+    /// Plonk universal setup srs file in lagrange form
+    #[clap(short = "l", long = "srs_lagrange_form")]
+    srs_lagrange_form: Option<String>,
     /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
     #[clap(short = "c", long = "circuit")]
     circuit: Option<String>,
