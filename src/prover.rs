@@ -24,13 +24,14 @@ use bellman_ce::{
 pub const SETUP_MIN_POW2: u32 = 20;
 pub const SETUP_MAX_POW2: u32 = 26;
 
-fn check_power_of_two(power_of_two: &u32) -> std::result::Result<(), anyhow::Error> {
-    anyhow::ensure!(
-        (SETUP_MIN_POW2..=SETUP_MAX_POW2).contains(&power_of_two),
-        "setup power of two is not in the correct range"
-    );
-    Ok(())
-}
+// fn check_power_of_two(power_of_two: &u32) -> std::result::Result<(), anyhow::Error> {
+//     anyhow::ensure!(
+//         (SETUP_MIN_POW2..=SETUP_MAX_POW2).contains(&power_of_two),
+//         "setup power of two is not in the correct range"
+//     );
+
+//     Ok(())
+// }
 
 // fn base_universal_setup_dir() -> Result<PathBuf, anyhow::Error> {
 //     let mut dir = PathBuf::new();
@@ -76,19 +77,24 @@ pub struct SetupForProver<E: Engine> {
     setup_polynomials: SetupPolynomials<E, PlonkCsWidth4WithNextStepParams>,
     hints: Vec<(usize, TranspilationVariant)>,
     setup_power_of_two: u32,
-    key_monomial_form: Option<Crs<E, CrsForMonomialForm>>,
+    key_monomial_form: Crs<E, CrsForMonomialForm>,
     key_lagrange_form: Option<Crs<E, CrsForLagrangeForm>>,
 }
 
 impl<E: Engine> SetupForProver<E> {
-    pub fn prepare_setup_for_prover<C: Circuit<E> + Clone>(circuit: C) -> Result<Self, anyhow::Error> {
+    pub fn prepare_setup_for_prover<C: Circuit<E> + Clone>(
+        circuit: C,
+        key_monomial_form: Crs<E, CrsForMonomialForm>,
+        key_lagrange_form: Option<Crs<E, CrsForLagrangeForm>>,
+    ) -> Result<Self, anyhow::Error> {
         let hints = transpile(circuit.clone())?;
         let setup_polynomials = setup(circuit, &hints)?;
         let size = setup_polynomials.n.next_power_of_two().trailing_zeros();
         let setup_power_of_two = std::cmp::max(size, SETUP_MIN_POW2); // for exit circuit
-
-        //         let key_monomial_form = Some(get_universal_setup_monomial_form(setup_power_of_two)?);
-        //         let key_lagrange_form = Some(get_universal_setup_lagrange_form(setup_power_of_two)?);
+        anyhow::ensure!(
+            (SETUP_MIN_POW2..=SETUP_MAX_POW2).contains(&setup_power_of_two),
+            "setup power of two is not in the correct range"
+        );
 
         Ok(SetupForProver {
             setup_power_of_two,
@@ -99,30 +105,24 @@ impl<E: Engine> SetupForProver<E> {
         })
     }
 
-    pub fn prove<C: Circuit<E> + Clone>(
-        &self,
-        circuit: C,
-        //         vk: &PlonkVerificationKey<E>,
-    ) -> Result<Proof<E, PlonkCsWidth4WithNextStepParams>, SynthesisError> {
-        match self.key_lagrange_form {
-            Some(_) => prove::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
+    pub fn prove<C: Circuit<E> + Clone>(&self, circuit: C) -> Result<Proof<E, PlonkCsWidth4WithNextStepParams>, SynthesisError> {
+        match &self.key_lagrange_form {
+            Some(key_lagrange_form) => prove::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
                 circuit,
                 &self.hints,
                 &self.setup_polynomials,
-                self.key_monomial_form
-                    .as_ref()
-                    .expect("Setup should have universal setup struct (monomial)"),
-                self.key_lagrange_form
-                    .as_ref()
-                    .expect("Setup should have universal setup struct (lagrange)"),
+                &self.key_monomial_form,
+                &key_lagrange_form,
             ),
             None => prove_by_steps::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
                 circuit,
                 &self.hints,
                 &self.setup_polynomials,
                 None,
-                self.key_monomial_form.as_ref().expect("Setup should have universal setup struct"),
+                &self.key_monomial_form,
             ),
         }
     }
 }
+// .as_ref()
+// .expect("Setup should have universal setup struct (monomial)"),

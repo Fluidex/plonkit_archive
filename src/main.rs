@@ -42,9 +42,9 @@ enum SubCommand {
 /// A subcommand for generating a SNARK proof
 #[derive(Clap)]
 struct ProveOpts {
-    /// Plonk universal setup power_of_two
-    #[clap(short = "o", long = "power_of_two", default_value = "20")]
-    power_of_two: u32,
+    // /// Plonk universal setup power_of_two
+    // #[clap(short = "o", long = "power_of_two", default_value = "20")]
+    // power_of_two: u32,
     /// Plonk universal setup srs file in monomial form
     #[clap(short = "m", long = "srs_monomial_form")]
     srs_monomial_form: String,
@@ -192,7 +192,7 @@ fn prove(opts: ProveOpts) {
         aux_offset: opts.proof_system.aux_offset(),
     };
 
-    prover::check_power_of_two(&opts.power_of_two);
+    // prover::check_power_of_two(&opts.power_of_two);
     let setup = prover::SetupForProver::prepare_setup_for_prover(circuit).expect("prepare err");
     let timer = Instant::now();
     let proof = setup.prove(
