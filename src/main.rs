@@ -8,6 +8,7 @@ use std::fs;
 use std::fs::File;
 use std::path::Path;
 use std::str;
+use std::time::Instant;
 use zkutil::circom_circuit::{
     create_rng, create_verifier_sol_file, generate_random_parameters, groth16_verify, load_inputs_json_file, load_params_file,
     load_proof_json_file, plonk_verify, proof_to_json_file, prove as prove2, proving_key_json_file, r1cs_from_bin_file,
@@ -60,7 +61,6 @@ struct ProveOpts {
     // /// Output file for public inputs JSON
     // #[clap(short = "o", long = "public", default_value = "public.json")]
     // public: String,
-
     /// Proof system
     #[clap(short = "s", long = "proof_system", default_value = "groth16")]
     proof_system: ProofSystem,
@@ -196,6 +196,19 @@ fn prove(opts: ProveOpts) {
     // proof_to_json_file(&proof, &opts.proof).unwrap();
     // fs::write(&opts.public, circuit.get_public_inputs_json().as_bytes()).unwrap();
     // println!("Saved {} and {}", opts.proof, opts.public);
+
+    let timer = Instant::now();
+    // let proof = prove_by_steps::<_, _, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(
+    //         circuit,
+    //         &self.hints,
+    //         &self.setup_polynomials,
+    //         None,
+    //         self.key_monomial_form.as_ref().expect("Setup should have universal setup struct"),
+    //     )?;
+    log::info!("Proving takes {:?}", timer.elapsed());
+    let writer = File::create(&opts.proof).unwrap();
+    // proof.write(writer).unwrap();
+    println!("Proof saved to {}", opts.proof);
 }
 
 fn verify(opts: VerifyOpts) {
