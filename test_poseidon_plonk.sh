@@ -18,7 +18,7 @@ echo "Step3: test prove and verify"
 RUST_LOG=info cargo test --release simple_plonk_test
 
 echo "Step4: prove with key_monomial_form"
-cargo run --release prove -o 20 -m $CIRCUIT_DIR/setup_2^20.key -s plonk -c $CIRCUIT_DIR/circuit.r1cs.json -w $CIRCUIT_DIR/witness.json
+cargo run --release prove -m $SETUP_DIR/setup_2^20.key -s plonk -c $CIRCUIT_DIR/circuit.r1cs.json -w $CIRCUIT_DIR/witness.json -p $CIRCUIT_DIR/proof.bin
 
 # TODO:
 # echo "Step5: dump l....."
