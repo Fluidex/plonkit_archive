@@ -19,7 +19,7 @@ use std::time::Instant;
 use std::{fs::remove_file, fs::File, path::Path, thread};
 
 use crate::circom_circuit::{r1cs_from_json_file, witness_from_json_file, CircomCircuit};
-use crate::proofsys_type::ProofSystem;
+use crate::plonk::AUX_OFFSET;
 
 pub const SETUP_MIN_POW2: u32 = 20;
 pub const SETUP_MAX_POW2: u32 = 26;

@@ -114,9 +114,6 @@ fn main() {
         SubCommand::Verify(o) => {
             verify(o);
         }
-        SubCommand::Setup(o) => {
-            setup(o);
-        }
         SubCommand::GenerateVerifier(o) => {
             generate_verifier(o);
         }
@@ -207,29 +204,7 @@ fn verify(opts: VerifyOpts) {
     }
 }
 
-fn setup(opts: SetupOpts) {
-    if opts.proof_system == ProofSystem::Plonk {
-        unimplemented!();
-    }
-
-    let circuit_file = resolve_circuit_file(opts.circuit);
-    println!("Loading circuit from {}...", circuit_file);
-    let rng = create_rng();
-    let circuit = CircomCircuit {
-        r1cs: load_r1cs(&circuit_file),
-        witness: None,
-        wire_mapping: None,
-        aux_offset: plonk::AUX_OFFSET,
-    };
-    println!("Generating trusted setup parameters...");
-    let params = generate_random_parameters(circuit, rng).unwrap();
-    println!("Writing to file...");
-    let writer = File::create(&opts.params).unwrap();
-    params.write(writer).unwrap();
-    println!("Saved parameters to {}", opts.params);
-}
-
-fn generate_verifier(opts: GenerateVerifierOpts) {
+fn generate_verifier(_opts: GenerateVerifierOpts) {
     unimplemented!();
 }
 

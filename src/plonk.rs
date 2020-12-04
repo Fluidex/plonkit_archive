@@ -10,7 +10,7 @@ use bellman_ce::{
     Circuit, ScalarEngine, SynthesisError,
 };
 
-const AUX_OFFSET: usize = 1;
+pub const AUX_OFFSET: usize = 1;
 
 const SETUP_MIN_POW2: u32 = 20;
 const SETUP_MAX_POW2: u32 = 26;
