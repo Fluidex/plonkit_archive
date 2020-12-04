@@ -2,6 +2,7 @@
 use bellman_ce::{
     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
     pairing::Engine,
+    plonk,
     plonk::{
         better_cs::cs::PlonkCsWidth4WithNextStepParams, commitments::transcript::keccak_transcript::RollingKeccakTranscript,
         make_verification_key, prove, prove_by_steps, setup, transpile, Proof, SetupPolynomials, TranspilationVariant, VerificationKey,
@@ -75,4 +76,12 @@ impl<E: Engine> SetupForProver<E> {
             &Worker::new(),
         )
     }
+}
+
+
+pub fn verify<E: Engine>(
+    vk: &VerificationKey<E, PlonkCsWidth4WithNextStepParams>,
+    proof: &Proof<E, PlonkCsWidth4WithNextStepParams>,
+) -> Result<bool, SynthesisError> {
+    plonk::verify::<_, RollingKeccakTranscript<<E as ScalarEngine>::Fr>>(&proof, &vk)
 }
