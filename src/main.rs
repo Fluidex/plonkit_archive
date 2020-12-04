@@ -131,9 +131,11 @@ struct ExportVkOpts {
     // /// Snark trusted setup parameters file
     // #[clap(short = "p", long = "params", default_value = "params.bin")]
     // params: String,
-    // /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
-    // #[clap(short = "c", long = "circuit")]
-    // circuit: Option<String>,
+
+    /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
+    #[clap(short = "c", long = "circuit")]
+    circuit: Option<String>,
+
     // /// Output proving key file
     // #[clap(short = "r", long = "pk", default_value = "proving_key.json")]
     // pk: String,
@@ -142,7 +144,7 @@ struct ExportVkOpts {
     #[clap(short = "v", long = "vk", default_value = "vk.bin")]
     vk: String,
     /// Proof system
-    #[clap(short = "s", long = "proof_system", default_value = "groth16")]
+    #[clap(short = "s", long = "proof_system", default_value = "plonk")]
     proof_system: ProofSystem,
 }
 
@@ -294,19 +296,26 @@ fn generate_verifier(opts: GenerateVerifierOpts) {
     println!("Created {}", opts.verifier);
 }
 
-fn export_vk(opts: ExportKeysOpts) {
+fn export_vk(opts: ExportVkOpts) {
     assert!(opts.proof_system == ProofSystem::Plonk, "Deprecated");
 
-    // println!("Exporting {}...", opts.params);
-    // let params = load_params_file(&opts.params);
-    // let circuit_file = resolve_circuit_file(opts.circuit);
-    // let circuit = CircomCircuit {
-    //     r1cs: load_r1cs(&circuit_file),
-    //     witness: None,
-    //     wire_mapping: None,
-    //     aux_offset: opts.proof_system.aux_offset(),
-    // };
+    let circuit_file = resolve_circuit_file(opts.circuit);
+    println!("Loading circuit from {}...", circuit_file);
+    let circuit = CircomCircuit {
+        r1cs: load_r1cs(&circuit_file),
+        witness: None,
+        wire_mapping: None,
+        aux_offset: opts.proof_system.aux_offset(),
+    };
+
+    let path = std::path::Path::new(&opts.vk);
+    assert!(!path.exists(), "path for saving verification key exists: {}", path.display());
+
     // proving_key_json_file(&params, circuit, &opts.pk).unwrap();
     // verification_key_json_file(&params, &opts.vk).unwrap();
     // println!("Created {} and {}.", opts.pk, opts.vk);
+
+    let writer = std::fs::File::create(&opts.vk).unwrap();
+    vk.write(writer).unwrap();
+    println!("Created {}", opts.vk);
 }
