@@ -36,8 +36,8 @@ enum SubCommand {
     Setup(SetupOpts),
     /// Generate verifier smart contract
     GenerateVerifier(GenerateVerifierOpts),
-    /// Export proving and verifying keys compatible with snarkjs/websnark
-    ExportKeys(ExportKeysOpts),
+    /// Export verifying key
+    ExportVk(ExportVkOpts),
 }
 
 /// A subcommand for dumping SRS in lagrange form
@@ -125,20 +125,21 @@ struct GenerateVerifierOpts {
     proof_system: ProofSystem,
 }
 
-/// A subcommand for exporting proving and verifying keys compatible with snarkjs/websnark
+/// A subcommand for exporting verifying keys
 #[derive(Clap)]
-struct ExportKeysOpts {
-    /// Snark trusted setup parameters file
-    #[clap(short = "p", long = "params", default_value = "params.bin")]
-    params: String,
-    /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
-    #[clap(short = "c", long = "circuit")]
-    circuit: Option<String>,
-    /// Output proving key file
-    #[clap(short = "r", long = "pk", default_value = "proving_key.json")]
-    pk: String,
+struct ExportVkOpts {
+    // /// Snark trusted setup parameters file
+    // #[clap(short = "p", long = "params", default_value = "params.bin")]
+    // params: String,
+    // /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
+    // #[clap(short = "c", long = "circuit")]
+    // circuit: Option<String>,
+    // /// Output proving key file
+    // #[clap(short = "r", long = "pk", default_value = "proving_key.json")]
+    // pk: String,
+
     /// Output verifying key file
-    #[clap(short = "v", long = "vk", default_value = "verification_key.json")]
+    #[clap(short = "v", long = "vk", default_value = "vk.bin")]
     vk: String,
     /// Proof system
     #[clap(short = "s", long = "proof_system", default_value = "groth16")]
@@ -168,9 +169,9 @@ fn main() {
             println!("Running with proof system: {:?}", o.proof_system);
             generate_verifier(o);
         }
-        SubCommand::ExportKeys(o) => {
+        SubCommand::ExportVk(o) => {
             println!("Running with proof system: {:?}", o.proof_system);
-            export_keys(o);
+            export_vk(o);
         }
     }
 }
@@ -293,21 +294,19 @@ fn generate_verifier(opts: GenerateVerifierOpts) {
     println!("Created {}", opts.verifier);
 }
 
-fn export_keys(opts: ExportKeysOpts) {
-    if opts.proof_system == ProofSystem::Plonk {
-        unimplemented!();
-    }
+fn export_vk(opts: ExportKeysOpts) {
+    assert!(opts.proof_system == ProofSystem::Plonk, "Deprecated");
 
-    println!("Exporting {}...", opts.params);
-    let params = load_params_file(&opts.params);
-    let circuit_file = resolve_circuit_file(opts.circuit);
-    let circuit = CircomCircuit {
-        r1cs: load_r1cs(&circuit_file),
-        witness: None,
-        wire_mapping: None,
-        aux_offset: opts.proof_system.aux_offset(),
-    };
-    proving_key_json_file(&params, circuit, &opts.pk).unwrap();
-    verification_key_json_file(&params, &opts.vk).unwrap();
-    println!("Created {} and {}.", opts.pk, opts.vk);
+    // println!("Exporting {}...", opts.params);
+    // let params = load_params_file(&opts.params);
+    // let circuit_file = resolve_circuit_file(opts.circuit);
+    // let circuit = CircomCircuit {
+    //     r1cs: load_r1cs(&circuit_file),
+    //     witness: None,
+    //     wire_mapping: None,
+    //     aux_offset: opts.proof_system.aux_offset(),
+    // };
+    // proving_key_json_file(&params, circuit, &opts.pk).unwrap();
+    // verification_key_json_file(&params, &opts.vk).unwrap();
+    // println!("Created {} and {}.", opts.pk, opts.vk);
 }
