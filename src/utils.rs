@@ -4,12 +4,6 @@ extern crate num_bigint;
 extern crate num_traits;
 extern crate rand;
 
-use bellman_ce::pairing::{
-    bn256::{Bn256, Fq12, G1Affine, G2Affine},
-    ff::PrimeField,
-    CurveAffine,
-};
-use itertools::Itertools;
 use num_bigint::BigUint;
 use num_traits::Num;
 use std::fmt::Display;

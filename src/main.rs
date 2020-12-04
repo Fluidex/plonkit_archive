@@ -29,7 +29,7 @@ enum SubCommand {
     /// Generate verifier smart contract
     GenerateVerifier(GenerateVerifierOpts),
     /// Export verifying key
-    ExportVk(ExportVkOpts),
+    ExportVerificationKey(ExportVerificationKeyOpts),
 }
 
 /// A subcommand for dumping SRS in lagrange form
@@ -86,7 +86,7 @@ struct GenerateVerifierOpts {}
 
 /// A subcommand for exporting verifying keys
 #[derive(Clap)]
-struct ExportVkOpts {
+struct ExportVerificationKeyOpts {
     /// Source file for Plonk universal setup srs in monomial form
     #[clap(short = "m", long = "srs_monomial_form")]
     srs_monomial_form: String,
@@ -113,7 +113,7 @@ fn main() {
         SubCommand::GenerateVerifier(o) => {
             generate_verifier(o);
         }
-        SubCommand::ExportVk(o) => {
+        SubCommand::ExportVerificationKey(o) => {
             export_vk(o);
         }
     }
@@ -204,7 +204,7 @@ fn generate_verifier(_opts: GenerateVerifierOpts) {
     unimplemented!();
 }
 
-fn export_vk(opts: ExportVkOpts) {
+fn export_vk(opts: ExportVerificationKeyOpts) {
     let circuit_file = resolve_circuit_file(opts.circuit);
     println!("Loading circuit from {}...", circuit_file);
     let circuit = CircomCircuit {

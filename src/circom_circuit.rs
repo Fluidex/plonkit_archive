@@ -3,23 +3,13 @@ extern crate bellman_ce;
 extern crate rand;
 
 use itertools::Itertools;
-use rand::{OsRng, Rng};
 use std::collections::BTreeMap;
-use std::fs::{self, File, OpenOptions};
+use std::fs::{File, OpenOptions};
 use std::io::{BufReader, Read};
-use std::iter::repeat;
 use std::str;
-use std::sync::Arc;
 
-use bellman_ce::groth16;
 use bellman_ce::{
-    pairing::{
-        bn256::{Bn256, Fq, Fq2, G1Affine, G2Affine},
-        ff::PrimeField,
-        ff::ScalarEngine,
-        CurveAffine, Engine,
-    },
-    source::QueryDensity,
+    pairing::{bn256::Bn256, ff::PrimeField, ff::ScalarEngine, Engine},
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
 
