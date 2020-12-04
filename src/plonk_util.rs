@@ -150,7 +150,7 @@ pub fn simple_plonk_test() {
         r1cs: r1cs_from_json_file::<Bn256>(&circuit_file),
         witness: None,
         wire_mapping: None,
-        aux_offset: ProofSystem::Plonk.aux_offset(),
+        aux_offset: AUX_OFFSET,
     };
     generate_verification_key(circuit.clone(), vk_path, true);
 
@@ -161,7 +161,7 @@ pub fn simple_plonk_test() {
         r1cs: r1cs_from_json_file::<Bn256>(&circuit_file),
         witness: Some(witness_from_json_file::<Bn256>(witness_file)),
         wire_mapping: None,
-        aux_offset: ProofSystem::Plonk.aux_offset(),
+        aux_offset: AUX_OFFSET,
     };
     let result = is_satisfied(circuit_with_witness.clone(), &setup.hints);
     println!("result {:?}", result);
