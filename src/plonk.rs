@@ -78,7 +78,6 @@ impl<E: Engine> SetupForProver<E> {
     }
 }
 
-
 pub fn verify<E: Engine>(
     vk: &VerificationKey<E, PlonkCsWidth4WithNextStepParams>,
     proof: &Proof<E, PlonkCsWidth4WithNextStepParams>,

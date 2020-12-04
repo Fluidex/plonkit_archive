@@ -23,7 +23,7 @@ use bellman_ce::{
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
 
-use crate::utils::{ repr_to_big};
+use crate::utils::repr_to_big;
 
 #[derive(Serialize, Deserialize)]
 struct CircuitJson {
@@ -35,7 +35,6 @@ struct CircuitJson {
     #[serde(rename = "nVars")]
     pub num_variables: usize,
 }
-
 
 pub type Constraint<E> = (
     Vec<(usize, <E as ScalarEngine>::Fr)>,
@@ -143,7 +142,6 @@ impl<'a, E: Engine> Circuit<E> for CircomCircuit<E> {
         Ok(())
     }
 }
-
 
 pub fn witness_from_json_file<E: Engine>(filename: &str) -> Vec<E::Fr> {
     let reader = OpenOptions::new().read(true).open(filename).expect("unable to open.");
