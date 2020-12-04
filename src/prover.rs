@@ -3,8 +3,10 @@ use bellman_ce::{
     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
     pairing::Engine,
     plonk::{
-        better_cs::cs::PlonkCsWidth4WithNextStepParams, commitments::transcript::keccak_transcript::RollingKeccakTranscript, prove,
-        prove_by_steps, setup, transpile, Proof, SetupPolynomials, TranspilationVariant,
+        better_cs::cs::{PlonkConstraintSystemParams, PlonkCsWidth4WithNextStepParams},
+        commitments::transcript::keccak_transcript::RollingKeccakTranscript,
+        make_verification_key, prove, prove_by_steps, setup, transpile, transpile_with_gates_count, Proof, SetupPolynomials,
+        TranspilationVariant, VerificationKey,
     },
     worker::Worker,
     Circuit, ScalarEngine, SynthesisError,
@@ -15,6 +17,7 @@ const SETUP_MAX_POW2: u32 = 26;
 
 pub struct SetupForProver<E: Engine> {
     setup_polynomials: SetupPolynomials<E, PlonkCsWidth4WithNextStepParams>,
+    gates_count: usize,
     hints: Vec<(usize, TranspilationVariant)>,
     key_monomial_form: Crs<E, CrsForMonomialForm>,
     key_lagrange_form: Option<Crs<E, CrsForLagrangeForm>>,
@@ -26,7 +29,7 @@ impl<E: Engine> SetupForProver<E> {
         key_monomial_form: Crs<E, CrsForMonomialForm>,
         key_lagrange_form: Option<Crs<E, CrsForLagrangeForm>>,
     ) -> Result<Self, anyhow::Error> {
-        let hints = transpile(circuit.clone())?;
+        let (gates_count, hints) = transpile_with_gates_count(circuit.clone())?;
         let setup_polynomials = setup(circuit, &hints)?;
         let size = setup_polynomials.n.next_power_of_two().trailing_zeros();
         let setup_power_of_two = std::cmp::max(size, SETUP_MIN_POW2); // for exit circuit
@@ -37,10 +40,15 @@ impl<E: Engine> SetupForProver<E> {
 
         Ok(SetupForProver {
             setup_polynomials,
+            gates_count,
             hints,
             key_monomial_form,
             key_lagrange_form,
         })
+    }
+
+    pub fn make_verification_key(&self) -> Result<VerificationKey<E, PlonkCsWidth4WithNextStepParams>, SynthesisError> {
+        make_verification_key(&self.setup_polynomials, &self.key_monomial_form)
     }
 
     pub fn prove<C: Circuit<E> + Clone>(&self, circuit: C) -> Result<Proof<E, PlonkCsWidth4WithNextStepParams>, SynthesisError> {

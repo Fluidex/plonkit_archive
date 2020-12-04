@@ -128,18 +128,12 @@ struct GenerateVerifierOpts {
 /// A subcommand for exporting verifying keys
 #[derive(Clap)]
 struct ExportVkOpts {
-    // /// Snark trusted setup parameters file
-    // #[clap(short = "p", long = "params", default_value = "params.bin")]
-    // params: String,
-
+    /// Source file for Plonk universal setup srs in monomial form
+    #[clap(short = "m", long = "srs_monomial_form")]
+    srs_monomial_form: String,
     /// Circuit R1CS or JSON file [default: circuit.r1cs|circuit.json]
     #[clap(short = "c", long = "circuit")]
     circuit: Option<String>,
-
-    // /// Output proving key file
-    // #[clap(short = "r", long = "pk", default_value = "proving_key.json")]
-    // pk: String,
-
     /// Output verifying key file
     #[clap(short = "v", long = "vk", default_value = "vk.bin")]
     vk: String,
@@ -308,14 +302,14 @@ fn export_vk(opts: ExportVkOpts) {
         aux_offset: opts.proof_system.aux_offset(),
     };
 
+    let setup =
+        prover::SetupForProver::prepare_setup_for_prover(circuit.clone(), io::load_key_monomial_form(&opts.srs_monomial_form), None)
+            .expect("prepare err");
+    let vk = setup.make_verification_key().unwrap();
+
     let path = std::path::Path::new(&opts.vk);
-    assert!(!path.exists(), "path for saving verification key exists: {}", path.display());
-
-    // proving_key_json_file(&params, circuit, &opts.pk).unwrap();
-    // verification_key_json_file(&params, &opts.vk).unwrap();
-    // println!("Created {} and {}.", opts.pk, opts.vk);
-
+    assert!(!path.exists(), "path for saving verification key exists: {}", path.display());z
     let writer = std::fs::File::create(&opts.vk).unwrap();
     vk.write(writer).unwrap();
-    println!("Created {}", opts.vk);
+    println!("Verification key saved to: {}", opts.vk);
 }
