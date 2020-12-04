@@ -35,7 +35,7 @@ enum SubCommand {
     /// Generate verifier smart contract
     GenerateVerifier(GenerateVerifierOpts),
     /// Export verifying key
-    ExportVk(ExportVkOpts),
+    ExportVerificationKey(ExportVerificationKeyOpts),
 }
 
 /// A subcommand for dumping SRS in lagrange form
@@ -125,7 +125,7 @@ struct GenerateVerifierOpts {
 
 /// A subcommand for exporting verifying keys
 #[derive(Clap)]
-struct ExportVkOpts {
+struct ExportVerificationKeyOpts {
     /// Source file for Plonk universal setup srs in monomial form
     #[clap(short = "m", long = "srs_monomial_form")]
     srs_monomial_form: String,
@@ -163,7 +163,7 @@ fn main() {
             println!("Running with proof system: {:?}", o.proof_system);
             generate_verifier(o);
         }
-        SubCommand::ExportVk(o) => {
+        SubCommand::ExportVerificationKey(o) => {
             println!("Running with proof system: {:?}", o.proof_system);
             export_vk(o);
         }
@@ -288,7 +288,7 @@ fn generate_verifier(opts: GenerateVerifierOpts) {
     println!("Created {}", opts.verifier);
 }
 
-fn export_vk(opts: ExportVkOpts) {
+fn export_vk(opts: ExportVerificationKeyOpts) {
     assert!(opts.proof_system == ProofSystem::Plonk, "Deprecated");
 
     let circuit_file = resolve_circuit_file(opts.circuit);
