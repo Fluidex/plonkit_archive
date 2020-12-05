@@ -122,9 +122,9 @@ fn main() {
 // TODO: move this...
 fn load_r1cs(filename: &str) -> R1CS<Bn256> {
     if filename.ends_with("json") {
-        r1cs_from_json_file(filename)
+        load_r1cs_from_json_file(filename)
     } else {
-        let (r1cs, _wire_mapping) = r1cs_from_bin_file(filename).unwrap();
+        let (r1cs, _wire_mapping) = load_r1cs_from_bin_file(filename).unwrap();
         r1cs
     }
 }
