@@ -13,7 +13,6 @@ use bellman_ce::{
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
 
-use crate::utils::repr_to_big;
 
 #[derive(Serialize, Deserialize)]
 struct CircuitJson {
@@ -47,27 +46,6 @@ pub struct CircomCircuit<E: Engine> {
     pub wire_mapping: Option<Vec<usize>>,
     pub aux_offset: usize,
     // debug symbols
-}
-
-impl<'a, E: Engine> CircomCircuit<E> {
-    pub fn get_public_inputs(&self) -> Option<Vec<E::Fr>> {
-        match &self.witness {
-            None => None,
-            Some(w) => match &self.wire_mapping {
-                None => Some(w[1..self.r1cs.num_inputs].to_vec()),
-                Some(m) => Some(m[1..self.r1cs.num_inputs].iter().map(|i| w[*i]).collect_vec()),
-            },
-        }
-    }
-
-    pub fn get_public_inputs_json(&self) -> String {
-        let inputs = self.get_public_inputs();
-        let inputs = match inputs {
-            None => return String::from("[]"),
-            Some(inp) => inp.iter().map(|x| repr_to_big(x.into_repr())).collect_vec(),
-        };
-        serde_json::to_string_pretty(&inputs).unwrap()
-    }
 }
 
 /// Our demo circuit implements this `Circuit` trait which
