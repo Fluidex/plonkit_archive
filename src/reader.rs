@@ -119,7 +119,7 @@ fn load_r1cs_from_bin_file(filename: &str) -> Result<(R1CS<Bn256>, Vec<usize>), 
 }
 
 fn load_r1cs_from_bin<R: Read>(reader: R) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
-    let file = crate::r1cs_reader::read(reader)?;
+    let file = crate::r1cs_parser::read(reader)?;
     let num_inputs = (1 + file.header.n_pub_in + file.header.n_pub_out) as usize;
     let num_variables = file.header.n_wires as usize;
     let num_aux = num_variables - num_inputs;
