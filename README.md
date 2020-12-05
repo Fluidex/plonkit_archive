@@ -72,7 +72,6 @@ Proof saved to proof.bin
 # Export verification key
 > plonkit export-verification-key --srs_monomial_form setup_2^20.key --circuit circuit.r1cs.json --vk vk.bin
 Verification key saved to vk.bin
-
 # Verify the proof
 > plonkit verify --proof proof.bin --verification_key vk.bin
 Proof is correct
