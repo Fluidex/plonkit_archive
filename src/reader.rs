@@ -65,7 +65,7 @@ pub fn load_witness_from_json_file<E: Engine>(filename: &str) -> Vec<E::Fr> {
 }
 
 fn load_witness_from_json<E: Engine, R: Read>(reader: R) -> Vec<E::Fr> {
-    let witness: Vec<String> = serde_json::from_reader(reader).unwrap();
+    let witness: Vec<String> = serde_json::from_reader(reader).expect("unable to read.");
     witness.into_iter().map(|x| E::Fr::from_str(&x).unwrap()).collect::<Vec<E::Fr>>()
 }
 
@@ -88,7 +88,7 @@ fn load_r1cs_from_json_file<E: Engine>(filename: &str) -> R1CS<E> {
 }
 
 fn load_r1cs_from_json<E: Engine, R: Read>(reader: R) -> R1CS<E> {
-    let circuit_json: CircuitJson = serde_json::from_reader(reader).unwrap();
+    let circuit_json: CircuitJson = serde_json::from_reader(reader).expect("unable to read.");
 
     let num_inputs = circuit_json.num_inputs + circuit_json.num_outputs + 1;
     let num_aux = circuit_json.num_variables - num_inputs;
@@ -119,7 +119,7 @@ fn load_r1cs_from_bin_file(filename: &str) -> Result<(R1CS<Bn256>, Vec<usize>), 
 }
 
 fn load_r1cs_from_bin<R: Read>(reader: R) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
-    let file = crate::r1cs_parser::read(reader)?;
+    let file = crate::r1cs_file::from_reader(reader)?;
     let num_inputs = (1 + file.header.n_pub_in + file.header.n_pub_out) as usize;
     let num_variables = file.header.n_wires as usize;
     let num_aux = num_variables - num_inputs;
