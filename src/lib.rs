@@ -14,4 +14,3 @@ pub mod plonk;
 pub mod plonk_util;
 pub mod r1cs_reader;
 pub mod reader;
-pub mod utils;

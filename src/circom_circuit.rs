@@ -13,7 +13,6 @@ use bellman_ce::{
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
 
-
 #[derive(Serialize, Deserialize)]
 struct CircuitJson {
     pub constraints: Vec<Vec<BTreeMap<String, String>>>,
