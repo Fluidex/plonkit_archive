@@ -77,7 +77,7 @@ pub fn load_r1cs(filename: &str) -> R1CS<Bn256> {
     if filename.ends_with("json") {
         load_r1cs_from_json_file(filename)
     } else {
-        let (r1cs, _wire_mapping) = load_r1cs_from_bin_file(filename).unwrap();
+        let (r1cs, _wire_mapping) = load_r1cs_from_bin_file(filename);
         r1cs
     }
 }
@@ -113,17 +113,17 @@ fn load_r1cs_from_json<E: Engine, R: Read>(reader: R) -> R1CS<E> {
     }
 }
 
-fn load_r1cs_from_bin_file(filename: &str) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
+fn load_r1cs_from_bin_file(filename: &str) -> (R1CS<Bn256>, Vec<usize>) {
     let reader = OpenOptions::new().read(true).open(filename).expect("unable to open.");
     load_r1cs_from_bin(BufReader::new(reader))
 }
 
-fn load_r1cs_from_bin<R: Read>(reader: R) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
-    let file = crate::r1cs_file::from_reader(reader)?;
+fn load_r1cs_from_bin<R: Read>(reader: R) -> (R1CS<Bn256>, Vec<usize>) {
+    let file = crate::r1cs_file::from_reader(reader).expect("unable to read.");
     let num_inputs = (1 + file.header.n_pub_in + file.header.n_pub_out) as usize;
     let num_variables = file.header.n_wires as usize;
     let num_aux = num_variables - num_inputs;
-    Ok((
+    (
         R1CS {
             num_aux,
             num_inputs,
@@ -131,5 +131,5 @@ fn load_r1cs_from_bin<R: Read>(reader: R) -> Result<(R1CS<Bn256>, Vec<usize>), s
             constraints: file.constraints,
         },
         file.wire_mapping.iter().map(|e| *e as usize).collect_vec(),
-    ))
+    )
 }
