@@ -6,7 +6,6 @@ use clap::Clap;
 use std::fs::File;
 use std::path::Path;
 use std::str;
-use std::time::Instant;
 
 use bellman_ce::pairing::bn256::Bn256;
 
@@ -173,7 +172,6 @@ fn prove(opts: ProveOpts) {
     .expect("prepare err");
 
     println!("Proving...");
-    let timer = Instant::now();
     let proof = setup.prove(circuit).unwrap();
     let writer = File::create(&opts.proof).unwrap();
     proof.write(writer).unwrap();
