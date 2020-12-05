@@ -1,11 +1,17 @@
 use anyhow::format_err;
+use itertools::Itertools;
+use std::collections::BTreeMap;
+use std::fs::{File, OpenOptions};
+use std::io::{BufReader, Read};
+use std::str;
+
 use bellman_ce::{
     kate_commitment::{Crs, CrsForLagrangeForm, CrsForMonomialForm},
-    pairing::Engine,
+    pairing::{bn256::Bn256, ff::PrimeField, Engine},
     plonk::{better_cs::cs::PlonkCsWidth4WithNextStepParams, better_cs::keys::Proof, VerificationKey},
 };
-use std::fs::File;
-use std::io::BufReader;
+
+use crate::circom_circuit::{CircuitJson, R1CS};
 
 ///
 /// proof
@@ -49,24 +55,39 @@ pub fn maybe_load_key_lagrange_form<E: Engine>(maybe_filename: Option<String>) -
     }
 }
 
-/// -----------------------
+///
+/// witness
+///
 
-pub fn witness_from_json_file<E: Engine>(filename: &str) -> Vec<E::Fr> {
+pub fn load_witness_from_json_file<E: Engine>(filename: &str) -> Vec<E::Fr> {
     let reader = OpenOptions::new().read(true).open(filename).expect("unable to open.");
-    witness_from_json::<E, BufReader<File>>(BufReader::new(reader))
+    load_witness_from_json::<E, BufReader<File>>(BufReader::new(reader))
 }
 
-pub fn witness_from_json<E: Engine, R: Read>(reader: R) -> Vec<E::Fr> {
+fn load_witness_from_json<E: Engine, R: Read>(reader: R) -> Vec<E::Fr> {
     let witness: Vec<String> = serde_json::from_reader(reader).unwrap();
     witness.into_iter().map(|x| E::Fr::from_str(&x).unwrap()).collect::<Vec<E::Fr>>()
 }
 
-pub fn load_r1cs_from_json_file<E: Engine>(filename: &str) -> R1CS<E> {
-    let reader = OpenOptions::new().read(true).open(filename).expect("unable to open.");
-    r1cs_from_json(BufReader::new(reader))
+///
+/// r1cs
+///
+
+pub fn load_r1cs(filename: &str) -> R1CS<Bn256> {
+    if filename.ends_with("json") {
+        load_r1cs_from_json_file(filename)
+    } else {
+        let (r1cs, _wire_mapping) = load_r1cs_from_bin_file(filename).unwrap();
+        r1cs
+    }
 }
 
-pub fn load_r1cs_from_json<E: Engine, R: Read>(reader: R) -> R1CS<E> {
+fn load_r1cs_from_json_file<E: Engine>(filename: &str) -> R1CS<E> {
+    let reader = OpenOptions::new().read(true).open(filename).expect("unable to open.");
+    load_r1cs_from_json(BufReader::new(reader))
+}
+
+fn load_r1cs_from_json<E: Engine, R: Read>(reader: R) -> R1CS<E> {
     let circuit_json: CircuitJson = serde_json::from_reader(reader).unwrap();
 
     let num_inputs = circuit_json.num_inputs + circuit_json.num_outputs + 1;
@@ -92,7 +113,12 @@ pub fn load_r1cs_from_json<E: Engine, R: Read>(reader: R) -> R1CS<E> {
     }
 }
 
-pub fn r1cs_from_bin<R: Read>(reader: R) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
+fn load_r1cs_from_bin_file(filename: &str) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
+    let reader = OpenOptions::new().read(true).open(filename).expect("unable to open.");
+    load_r1cs_from_bin(BufReader::new(reader))
+}
+
+fn load_r1cs_from_bin<R: Read>(reader: R) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
     let file = crate::r1cs_reader::read(reader)?;
     let num_inputs = (1 + file.header.n_pub_in + file.header.n_pub_out) as usize;
     let num_variables = file.header.n_wires as usize;
@@ -106,9 +132,4 @@ pub fn r1cs_from_bin<R: Read>(reader: R) -> Result<(R1CS<Bn256>, Vec<usize>), st
         },
         file.wire_mapping.iter().map(|e| *e as usize).collect_vec(),
     ))
-}
-
-pub fn r1cs_from_bin_file(filename: &str) -> Result<(R1CS<Bn256>, Vec<usize>), std::io::Error> {
-    let reader = OpenOptions::new().read(true).open(filename).expect("unable to open.");
-    r1cs_from_bin(BufReader::new(reader))
 }

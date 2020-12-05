@@ -2,19 +2,16 @@
 extern crate bellman_ce;
 extern crate rand;
 
-use itertools::Itertools;
 use std::collections::BTreeMap;
-use std::fs::{File, OpenOptions};
-use std::io::{BufReader, Read};
 use std::str;
 
 use bellman_ce::{
-    pairing::{bn256::Bn256, ff::PrimeField, ff::ScalarEngine, Engine},
+    pairing::{ff::PrimeField, ff::ScalarEngine, Engine},
     Circuit, ConstraintSystem, Index, LinearCombination, SynthesisError, Variable,
 };
 
 #[derive(Serialize, Deserialize)]
-struct CircuitJson {
+pub struct CircuitJson {
     pub constraints: Vec<Vec<BTreeMap<String, String>>>,
     #[serde(rename = "nPubInputs")]
     pub num_inputs: usize,
