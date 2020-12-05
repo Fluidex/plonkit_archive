@@ -13,3 +13,4 @@ pub mod circom_circuit;
 pub mod plonk;
 pub mod r1cs_file;
 pub mod reader;
+pub mod utils;
