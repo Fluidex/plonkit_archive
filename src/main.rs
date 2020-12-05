@@ -305,9 +305,9 @@ fn export_vk(opts: ExportVerificationKeyOpts) {
             .expect("prepare err");
     let vk = setup.make_verification_key().unwrap();
 
-    let path = std::path::Path::new(&opts.vk);
+    let path = Path::new(&opts.vk);
     assert!(!path.exists(), "path for saving verification key exists: {}", path.display());
-    let writer = std::fs::File::create(&opts.vk).unwrap();
+    let writer = File::create(&opts.vk).unwrap();
     vk.write(writer).unwrap();
     println!("Verification key saved to: {}", opts.vk);
 }
