@@ -1,5 +1,7 @@
 # plonkit!
 
+Moved to <https://github.com/Fluidex/plonkit>
+
 A zkSNARK toolkit to work with [circom](https://github.com/iden3/circom) zkSNARKs DSL in [plonk](https://eprint.iacr.org/2019/953) proof system. Based on [zkutil](https://github.com/poma/zkutil) and [zkSync](https://github.com/matter-labs/zksync).
 
 ## Prerequisites
